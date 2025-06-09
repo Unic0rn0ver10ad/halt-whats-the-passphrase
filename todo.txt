@@ -1,8 +1,0 @@
-[ ] prevent the same dictionary word from appearing twice in the same passphrase
-[ ] pipe output from command line to files, other programs
-
-[ ] Use GenAI tool to parse arbitrary password requirements on target site page
-
-From CA DMV:
-Must be between 8-20 characters in length and include at least 4 alpha characters, 1 numeric character (0-9) or 1 special character (!,#,$,%).
-The password is case sensitive and must not contain spaces or be the same as your email address.
