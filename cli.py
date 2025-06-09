@@ -12,9 +12,6 @@ class CLI:
     self.args = None
     self.cli()
 
-  # def get_arg(self, arg):
-  #   return self.args[arg]
-
   def get_arg(self, arg):
     return self.args.get(arg)  # .get() method returns None if the key doesn't exist, avoiding KeyError
 
@@ -23,7 +20,7 @@ class CLI:
     self.arg_parser = argparse.ArgumentParser(
       description="Halt! What's the Passphrase? generates passphrases as well as traditional passwords. Try the -w Wikipedia passphrase option!", 
       prog="Halt! What's the Passphrase?")
-    
+
     # Create the subparser
     subparsers = self.arg_parser.add_subparsers(dest='subparser_name')
 
@@ -54,25 +51,25 @@ class CLI:
     # Enable subcommands for the utils command
     utils_subparsers = utils_parser.add_subparsers(dest='utils_command')
 
-    # Create the parser for the "part" (Partitions) option under "utils"
-    part_parser = utils_subparsers.add_parser('part', help='Generate partitions dict.')
+    # process-all: bulk dictionary processing
+    proc_all = utils_subparsers.add_parser('process-all', help='Process all raw dictionaries')
+    proc_all.add_argument('-minw','--min-word-length', type=int, default=4, 
+                          help='Minimum word length (default: 4)')
+    proc_all.add_argument('-maxw','--max-word-length', type=int, default=9, 
+                          help='Maximum word length (default: 9)')
 
-    # Add arguments specific to the 'part' option
-    part_parser.add_argument('-minp', type=int, help='Minimum partition size. Default = 10.', default=10)
-    part_parser.add_argument('-maxp', type=int, help='Maximum partition size. Default = 50.', default=50)
-    part_parser.add_argument('-minw', type=int, help='Minimum word length in partitions. Default = 4.', default=4)
-    part_parser.add_argument('-maxw', type=int, help='Maximum word length in partitions. Default = 9.', default=9)
-    part_parser.add_argument('-file', type=str, help='Specify a file for additional processing or output. Default = none.', default=None)
+    # process: single dictionary processing
+    proc = utils_subparsers.add_parser('process', help='Process one raw dictionary')
+    proc.add_argument('-d','--dictionary', type=str, required=True,
+                      help='Raw dictionary filename (with .txt)')
+    proc.add_argument('-minw','--min-word-length', type=int, default=4, 
+                      help='Minimum word length (default: 4)')
+    proc.add_argument('-maxw','--max-word-length', type=int, default=9, 
+                      help='Maximum word length (default: 9)')
 
-                      # Create the parser for the "dict" (Dictionary) option under "utils"
-    dict_parser = utils_subparsers.add_parser('dict', help='Generate all dictionary files from a raw dictionary.')
-
-    # Add arguments specific to the 'dict' option
-    dict_parser.add_argument('-d', type=str, help='Name of the raw dictionary file. Must be a .txt file. Do not include .txt suffix. Text file must be located in the raw_dictionaries folder.')
-    
     # Add arguments to the pwnage subparser
     pwn_parser.add_argument('password')
-    
+
     # Add arguments to the password subparser
     pw_parser.add_argument('-c', '--chars',
                           help='Number of characters per password. Default = 20.',

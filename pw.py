@@ -118,17 +118,18 @@ class password:
     # ERROR CHECK: ALPHABETS
     # check to make sure self.alphabet is not an empty string!
     if self.alphabet == str():
-      print("You've asked for a password but have disallowed all possible characters. Very clever! Your password is: chicken1. Exiting.")
+      print("You've asked for a password but have disallowed all possible characters. Very clever! Your password is: n0thingness. Exiting.")
       exit(1)
 
     # you can't bookend without any actual letters
     if self.bookend is True and self.user_alphas == str():
-      print("You've asked for a bookended password that doesn't start with digits or special characters, but disallowed upper and lowercase letters as well. Your password is: emptiness. Exiting.")
+      print("You've asked for a bookended password that doesn't start with digits or special characters, but disallowed upper and lowercase letters as well. Your password is: n1c3try. Exiting.")
       exit(1)
 
     # ENTROPY TESTER
-    self.entropy_val = self.e.test_entropy(self.num_chars, len(self.alphabet))
-    if self.verbose is True: print(f"Entropy for all passwords of length {self.num_chars} with {len(self.alphabet)} possible values per character = {round(self.entropy_val)}")
+    if self.verbose is True:
+      self.entropy_val = self.e.test_entropy(self.num_chars, len(self.alphabet))
+      print(f"Entropy for all passwords of length {self.num_chars} with {len(self.alphabet)} possible values per character = {round(self.entropy_val)}")
 
     # GENERATE PASSWORD LIST
     self.password_list = self.generate_password_list()

@@ -31,6 +31,7 @@ if __name__ == '__main__':
         elif utils_type == 'dict':
             dict_raw_filename = cli.get_arg('d')
             print(f'dictionary command activated: {dict_raw_filename}')
+            pp_utils.process_raw_dictionary(dict_raw_filename, min_word_length, max_word_length)
         elif utils_type == 'utils_command':
             pp_utils.create_partitions(start_n=min_partitions,
                                        end_n=max_partitions,
@@ -47,6 +48,7 @@ if __name__ == '__main__':
         verbose = cli.get_arg('verbose')
         color = cli.get_arg('color')
         pwn = cli.get_arg('pwn')
+
     if ptype == 'pwn':
         # submit the password to HaveIBeenPwned
         password = cli.get_arg('password')
