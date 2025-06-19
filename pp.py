@@ -15,24 +15,29 @@ from typing import List
 # Local application imports
 import entropy
 import color
-from pp_utils import json_read as jr, file_generic_read as tr  # JSON Read, Text Read
+from pp_utils import json_read as jr  # JSON Read
+from pp_utils import file_generic_read as tr  # Text Read
 from pp_utils import generate_wordlist_from_dictionary as gwfd
 
 class passphrase:
-    def __init__(self, verbose=False, colorize=False):
+    def __init__(self, verbose=False, colorize=False, language=False):        
+        self.verbose = verbose
+        self.color = colorize
+        self.language = language
+        self.default_language = "eff_large_wordlist"
+        if not self.language:
+            self.language = self.default_language
+        else:
+            self.language = self.language
+        self.wordlist_file = self.language + "_filtered.txt"
+        self.wordlength_file = self.language + "_wordlength.json"
+        self.partitions_file = self.language + "_partitions.json"
+        self.min_word_length = 4  # minimum = hardcoded
+        self.max_word_length = 9  # maximum = hardcoded
+
         # instantiate crypto‐secure RNG
         self._crypto = secrets.SystemRandom()
         
-        self.verbose = verbose
-        self.color = colorize
-        self.dn = "eff_large_wordlist"  # Dictionary Name is hardcoded here
-        self.dn = "hwtp_short_test_3"  # Dictionary Name is hardcoded here
-        self.wordlist_file = self.dn + "_filtered.txt"
-        self.wordlength_file = self.dn + "_wordlength.json"
-        self.partitions_file = self.dn + "_partitions.json"
-        self.min_word_length = 4  # hardcoded
-        self.max_word_length = 9  # hardcoded
-
         # WORDLIST
         self.wordlist = gwfd(self.wordlist_file, cache=True)
         self.wordlist_length = len(self.wordlist)

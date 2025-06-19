@@ -12,7 +12,7 @@ from collections import defaultdict
 from typing import Union, List, Dict
 
 # Constants for directory paths
-DICTIONARY_DIR = Path('dictionaries')
+DICTIONARY_DIR = Path('wordlists')
 CACHE_DIR = Path('cache')
 
 # --------------------------
@@ -106,7 +106,7 @@ def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[i
 # --------------------------
 def process_all_dictionaries(min_word_length: int = 4, max_word_length: int = 9) -> None:
     """
-    Process every dictionary file in the dictionaries directory.
+    Process every dictionary file in the wordlists directory.
     Automatically detects whether the file is a dicelist based on the first line format.
     """
     for dictionary_path in DICTIONARY_DIR.glob("*.txt"):
@@ -178,7 +178,7 @@ def generate_wordlist_from_dictionary(dictionary_name_in: str, cache: bool = Fal
         with dictionary_path_in.open("r", encoding="utf-8") as in_file:
             return [x.strip() for x in in_file]
     except Exception as error:
-        loc = "cache" if cache else "dictionaries"
+        loc = "cache" if cache else "wordlists"
         print(f"Couldn't read file from {loc}: {dictionary_name_in} Error: {error}")
         return False
 

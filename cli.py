@@ -129,6 +129,10 @@ class CLI:
                           help="Submit generated passwords to HaveIBeenPwned to check if they have already been found in a databreach.",
                           action='store_true',
                           default=False)
+    pw_parser.add_argument('-lang',
+                            help="Choose which language (passphrase wordlist) you want to use.",
+                            action='store_true',
+                            default=False)
 
     # Add arguments to the passphrase subparser
     pp_parser.add_argument('-c', '--chars',
@@ -143,6 +147,10 @@ class CLI:
                           help='Colorize the output text.',
                           action='store_true',
                           default=False)
+    pp_parser.add_argument('-lang', '--language', 
+                           help='Choose which language (passphrase wordlist) you want to use.', 
+                           type=str,
+                           default=None)
     pp_parser.add_argument('-v', '--verbose',
                           help='Print verbose output.',
                           action='store_true',

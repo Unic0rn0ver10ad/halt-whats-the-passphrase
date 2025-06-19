@@ -1,6 +1,6 @@
 # 🛑 Halt! What's the Passphrase?
 
-![HWTP Mascot](hwtp.jpg)
+![HWTP Mascot](HWTP.jpg)
 
 **Halt! What's the Passphrase?** (HWTP) is a passphrase and password generator written in Python with a command-line interface (CLI) powered by `argparse`.
 
