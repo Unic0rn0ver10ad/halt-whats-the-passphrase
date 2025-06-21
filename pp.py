@@ -15,18 +15,31 @@ from typing import List
 # Local application imports
 import entropy
 import color
-from pp_utils import json_read as jr  # JSON Read
-from pp_utils import file_generic_read as tr  # Text Read
-from pp_utils import generate_wordlist_from_dictionary as gwfd
+from pathlib import Path
+from pp_utils import (
+    CACHE_DIR,
+    json_read as jr,  # JSON Read
+    file_generic_read as tr,  # Text Read
+    generate_wordlist_from_dictionary as gwfd,
+    list_available_dictionaries,
+)
 
 class passphrase:
-    def __init__(self, verbose=False, colorize=False, dictionary=None):
+    def __init__(self, verbose: bool = False, colorize: bool = False, dictionary: str | None = None):
         self.verbose = verbose
         self.color = colorize
-        self.dictionary = dictionary or "eff_large_wordlist"
-        self.wordlist_file = self.dictionary + "_filtered.txt"
-        self.wordlength_file = self.dictionary + "_wordlength.json"
-        self.partitions_file = self.dictionary + "_partitions.json"
+        self.default_dictionary = "eff_large_wordlist"
+        self.dictionary = dictionary or self.default_dictionary
+
+        self.wordlist_file = CACHE_DIR / f"{self.dictionary}_filtered.txt"
+        self.wordlength_file = CACHE_DIR / f"{self.dictionary}_wordlength.json"
+        self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions.json"
+
+        missing_files = [p for p in [self.wordlist_file, self.wordlength_file, self.partitions_file] if not p.exists()]
+        if missing_files:
+            print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
+            list_available_dictionaries()
+            exit(1)
         self.min_word_length = 4  # minimum = hardcoded
         self.max_word_length = 9  # maximum = hardcoded
 
@@ -34,14 +47,14 @@ class passphrase:
         self._crypto = secrets.SystemRandom()
         
         # WORDLIST
-        self.wordlist = gwfd(self.wordlist_file, cache=True)
+        self.wordlist = gwfd(self.wordlist_file.name, cache=True)
         self.wordlist_length = len(self.wordlist)
         if self.verbose:
             print(f"Got wordlist: {self.wordlist_file}")
             print(f"  {self.wordlist_length} words in {self.wordlist_file}")
 
         # WORDLENGTH DICT
-        self.wordlength_dict = jr(self.wordlength_file)
+        self.wordlength_dict = jr(self.wordlength_file.name)
         if self.verbose:
             print(f"Imported wordlength dictionary: {self.wordlength_file}")
             # 1. Pull out the keys and convert to int
@@ -55,7 +68,7 @@ class passphrase:
             print(f"  Possible word lengths found from {len(self.wordlength_dict)} : {out}")
 
         # PARTITIONS DICT
-        self.partitions_dict = jr(self.partitions_file)
+        self.partitions_dict = jr(self.partitions_file.name)
         if self.verbose:
             print(f"Imported partitions dictionary from: {self.partitions_file}")
             print(f"  Possible partition keys found: {len(self.partitions_dict)}")
