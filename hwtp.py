@@ -8,6 +8,7 @@ import pp  # passphrase generator
 import pw  # password generator
 import hibp  # check passwords for known breached
 import pp_utils  # passphrase utilities
+from pathlib import Path
 
 if __name__ == '__main__':
     # CLI object
@@ -46,6 +47,24 @@ if __name__ == '__main__':
                 max_word_length=max_word_length,
                 start_n=start_n,
                 end_n=end_n,
+            )
+        elif utils_type == 'part':
+            output = cli.get_arg('output')
+            if output is None:
+                print("Output file required for part command.")
+                exit(1)
+            min_word_length = cli.get_arg('min_word_length')
+            max_word_length = cli.get_arg('max_word_length')
+            start_n = cli.get_arg('start_n')
+            end_n = cli.get_arg('end_n')
+            sn = start_n if start_n is not None else min_word_length * 2
+            en = end_n if end_n is not None else max_word_length * 5
+            pp_utils.create_partitions(
+                partition_path=Path(output),
+                start_n=sn,
+                end_n=en,
+                min_val=min_word_length,
+                max_val=max_word_length,
             )
         exit()
 

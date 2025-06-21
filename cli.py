@@ -75,6 +75,19 @@ class CLI:
     proc.add_argument('--end-n', type=int, default=None,
                       help='End partition value (default: max-word-length * 5)')
 
+    # part: standalone partition generation
+    part = utils_subparsers.add_parser('part', help='Generate partitions JSON file')
+    part.add_argument('-o','--output', type=str, required=True,
+                      help='Output JSON filename for generated partitions')
+    part.add_argument('-minw','--min-word-length', type=int, default=4,
+                      help='Minimum word length (default: 4)')
+    part.add_argument('-maxw','--max-word-length', type=int, default=9,
+                      help='Maximum word length (default: 9)')
+    part.add_argument('--start-n', type=int, default=None,
+                      help='Start partition value (default: min-word-length * 2)')
+    part.add_argument('--end-n', type=int, default=None,
+                      help='End partition value (default: max-word-length * 5)')
+
     # Add arguments to the pwnage subparser
     pwn_parser.add_argument('password')
 
