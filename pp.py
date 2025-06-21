@@ -40,8 +40,6 @@ class passphrase:
             print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
             list_available_dictionaries()
             exit(1)
-        self.min_word_length = 4  # minimum = hardcoded
-        self.max_word_length = 9  # maximum = hardcoded
 
         # instantiate crypto‐secure RNG
         self._crypto = secrets.SystemRandom()
@@ -55,6 +53,8 @@ class passphrase:
 
         # WORDLENGTH DICT
         self.wordlength_dict = jr(self.wordlength_file.name)
+        self.min_word_length = min(self.wordlength_dict)
+        self.max_word_length = max(self.wordlength_dict)
         if self.verbose:
             print(f"Imported wordlength dictionary: {self.wordlength_file}")
             # 1. Pull out the keys and convert to int
