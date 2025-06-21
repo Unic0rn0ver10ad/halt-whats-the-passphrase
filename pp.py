@@ -15,38 +15,54 @@ from typing import List
 # Local application imports
 import entropy
 import color
-from pp_utils import json_read as jr  # JSON Read
-from pp_utils import file_generic_read as tr  # Text Read
-from pp_utils import generate_wordlist_from_dictionary as gwfd
+from pathlib import Path
+from pp_utils import (
+    CACHE_DIR,
+    json_read as jr,  # JSON Read
+    file_generic_read as tr,  # Text Read
+    generate_wordlist_from_dictionary as gwfd,
+    list_available_dictionaries,
+    dictionary_exists,
+)
+
+def safe_capitalize(word: str) -> str:
+    """Capitalize first ASCII alphabetic character, if present."""
+    return (word[0].upper() + word[1:]) if word[:1].isalpha() and word[:1].isascii() else word
 
 class passphrase:
-    def __init__(self, verbose=False, colorize=False, language=False):        
+    def __init__(self, verbose: bool = False, colorize: bool = False,
+                 dictionary: str | None = None,
+                 start_n: int | None = None,
+                 end_n: int | None = None):
         self.verbose = verbose
         self.color = colorize
-        self.language = language
-        self.default_language = "eff_large_wordlist"
-        if not self.language:
-            self.language = self.default_language
-        else:
-            self.language = self.language
-        self.wordlist_file = self.language + "_filtered.txt"
-        self.wordlength_file = self.language + "_wordlength.json"
-        self.partitions_file = self.language + "_partitions.json"
-        self.min_word_length = 4  # minimum = hardcoded
-        self.max_word_length = 9  # maximum = hardcoded
+        self.default_dictionary = "eff_large_wordlist"
+        self.dictionary = dictionary or self.default_dictionary
+        self.start_n = start_n
+        self.end_n = end_n
+
+        self.wordlist_file = CACHE_DIR / f"{self.dictionary}_filtered.txt"
+        self.wordlength_file = CACHE_DIR / f"{self.dictionary}_wordlength.json"
+
+        if not dictionary_exists(self.dictionary):
+            print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
+            list_available_dictionaries()
+            exit(1)
 
         # instantiate crypto‐secure RNG
         self._crypto = secrets.SystemRandom()
         
         # WORDLIST
-        self.wordlist = gwfd(self.wordlist_file, cache=True)
+        self.wordlist = gwfd(self.wordlist_file.name, cache=True)
         self.wordlist_length = len(self.wordlist)
         if self.verbose:
             print(f"Got wordlist: {self.wordlist_file}")
             print(f"  {self.wordlist_length} words in {self.wordlist_file}")
 
         # WORDLENGTH DICT
-        self.wordlength_dict = jr(self.wordlength_file)
+        self.wordlength_dict = jr(self.wordlength_file.name)
+        self.min_word_length = min(self.wordlength_dict)
+        self.max_word_length = max(self.wordlength_dict)
         if self.verbose:
             print(f"Imported wordlength dictionary: {self.wordlength_file}")
             # 1. Pull out the keys and convert to int
@@ -59,8 +75,16 @@ class passphrase:
             out = ", ".join(str(k) for k in keys)
             print(f"  Possible word lengths found from {len(self.wordlength_dict)} : {out}")
 
+        # START/END RANGES AND PARTITION FILE
+        self.start_n = self.start_n if self.start_n is not None else self.min_word_length * 2
+        self.end_n = self.end_n if self.end_n is not None else self.max_word_length * 5
+        if start_n is None and end_n is None:
+            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions.json"
+        else:
+            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions_{self.start_n}_{self.end_n}.json"
+
         # PARTITIONS DICT
-        self.partitions_dict = jr(self.partitions_file)
+        self.partitions_dict = jr(self.partitions_file.name)
         if self.verbose:
             print(f"Imported partitions dictionary from: {self.partitions_file}")
             print(f"  Possible partition keys found: {len(self.partitions_dict)}")
@@ -143,7 +167,7 @@ class passphrase:
         return result
 
     def get_random_word_of_length(self, length):
-        return self._crypto.choice(self.wordlength_dict[length]).capitalize()
+        return safe_capitalize(self._crypto.choice(self.wordlength_dict[length]))
 
     def colorize_passphrase(self, text):
         colored = ''
@@ -207,5 +231,5 @@ class passphrase:
             w = self._crypto.choice(pool)
             if w not in chosen:
                 chosen.add(w)
-                result.append(w.capitalize())
+                result.append(safe_capitalize(w))
         return result

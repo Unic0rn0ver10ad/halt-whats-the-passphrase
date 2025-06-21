@@ -42,6 +42,11 @@ Generate 32-character passphrases:
 python hwtp.py pp -co -n 20 -c 32
 ```
 
+Customize the partition range (advanced):
+```bash
+python hwtp.py pp --start-n 8 --end-n 40
+```
+
 Display help:
 ```bash
 python hwtp.py pp -h
@@ -99,6 +104,23 @@ python hwtp.py pw -co -n 10 -no u l d -sd '@ # $ _ & ( ) / : ; ! ? - ='
 Or whitelist specific special characters:
 ```bash
 python hwtp.py pw -co -n 10 -no u l d -so '@ # $ ='
+```
+
+### Dictionary Utilities
+
+Process a single dictionary with a custom partition range:
+```bash
+python hwtp.py utils process -d mywords.txt --start-n 8 --end-n 40
+```
+
+Process all dictionaries in `wordlists/`:
+```bash
+python hwtp.py utils process-all --start-n 8 --end-n 40
+```
+
+Generate a standalone partitions file:
+```bash
+python hwtp.py utils part -o partitions.json --start-n 8 --end-n 40
 ```
 
 ---

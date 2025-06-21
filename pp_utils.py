@@ -104,7 +104,8 @@ def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[i
 # --------------------------
 # Dictionary Utilities
 # --------------------------
-def process_all_dictionaries(min_word_length: int = 4, max_word_length: int = 9) -> None:
+def process_all_dictionaries(min_word_length: int = 4, max_word_length: int = 9,
+                             start_n: int | None = None, end_n: int | None = None) -> None:
     """
     Process every dictionary file in the wordlists directory.
     Automatically detects whether the file is a dicelist based on the first line format.
@@ -126,12 +127,19 @@ def process_all_dictionaries(min_word_length: int = 4, max_word_length: int = 9)
                 raw_dictionary_filename=dictionary_path.name,
                 min_word_length=min_word_length,
                 max_word_length=max_word_length,
+                start_n=start_n,
+                end_n=end_n,
                 is_dicelist=is_dicelist
             )
         except Exception as e:
             print(f"[ERROR] Failed to process {dictionary_path.name}: {e}")
 
-def process_raw_dictionary(raw_dictionary_filename: str, min_word_length: int = 4, max_word_length: int = 9, is_dicelist: bool = False) -> bool:
+def process_raw_dictionary(raw_dictionary_filename: str,
+                           min_word_length: int = 4,
+                           max_word_length: int = 9,
+                           start_n: int | None = None,
+                           end_n: int | None = None,
+                           is_dicelist: bool = False) -> bool:
     print(f'Processing {raw_dictionary_filename}')
     try:
         stem = Path(raw_dictionary_filename).stem
@@ -152,11 +160,16 @@ def process_raw_dictionary(raw_dictionary_filename: str, min_word_length: int = 
         if not json_write(wordlength_dict_path, generate_wordlength_dict(wordlist)):
             raise RuntimeError("Failed to write wordlength dictionary.")
 
-        partitions_path = CACHE_DIR / f"{stem}_partitions.json"
+        sn = start_n if start_n is not None else min_word_length * 2
+        en = end_n if end_n is not None else max_word_length * 5
+        if start_n is None and end_n is None:
+            partitions_path = CACHE_DIR / f"{stem}_partitions.json"
+        else:
+            partitions_path = CACHE_DIR / f"{stem}_partitions_{sn}_{en}.json"
         create_partitions(
             partition_path=partitions_path,
-            start_n=min_word_length * 2,
-            end_n=max_word_length * 5,
+            start_n=sn,
+            end_n=en,
             min_val=min_word_length,
             max_val=max_word_length
         )
@@ -221,3 +234,36 @@ def convert_dicelist_to_dictionary(dictionary_name_in: str) -> Union[List[str], 
     except Exception as error:
         print(f"Couldn't read file: {dictionary_name_in} Error: {error}")
         return False
+
+
+def list_cached_dictionaries() -> List[str]:
+    """Return sorted base names of dictionaries found in the cache directory."""
+    names = set()
+    if not CACHE_DIR.exists():
+        return []
+    for path in CACHE_DIR.glob("*_filtered.txt"):
+        names.add(path.stem.replace("_filtered", ""))
+    for path in CACHE_DIR.glob("*_wordlength.json"):
+        names.add(path.stem.replace("_wordlength", ""))
+    return sorted(names)
+
+
+def dictionary_exists(name: str) -> bool:
+    """Check if the cached dictionary ``name`` has all required files."""
+    reqs = [
+        CACHE_DIR / f"{name}_filtered.txt",
+        CACHE_DIR / f"{name}_wordlength.json",
+        CACHE_DIR / f"{name}_partitions.json",
+    ]
+    return all(p.exists() for p in reqs)
+
+
+def list_available_dictionaries() -> None:
+    """Print a user friendly list of cached dictionaries."""
+    cached = list_cached_dictionaries()
+    if not cached:
+        print("No cached dictionaries available.")
+        return
+    print("Available cached dictionaries:")
+    for name in cached:
+        print(f"  {name}")

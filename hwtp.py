@@ -8,6 +8,7 @@ import pp  # passphrase generator
 import pw  # password generator
 import hibp  # check passwords for known breached
 import pp_utils  # passphrase utilities
+from pathlib import Path
 
 if __name__ == '__main__':
     # CLI object
@@ -23,30 +24,20 @@ if __name__ == '__main__':
 
     if ptype == 'utils':
         utils_type = cli.get_arg('utils_command')
-        if utils_type == 'process-all':
-            min_word_length = cli.get_arg('min_word_length')
-            max_word_length = cli.get_arg('max_word_length')
-            pp_utils.process_all_dictionaries(min_word_length, max_word_length)
-        elif utils_type == 'process':
-            dict_raw_filename = cli.get_arg('dictionary')
-            min_word_length = cli.get_arg('min_word_length')
-            max_word_length = cli.get_arg('max_word_length')
-            print(f'Processing dictionary: {dict_raw_filename}')
-            # Auto-detect if it's a dicelist
-            dictionary_path = pp_utils.DICTIONARY_DIR / dict_raw_filename
-            try:
-                with dictionary_path.open("r", encoding="utf-8") as file:
-                    first_line = file.readline().strip()
-                    is_dicelist = bool(
-                        first_line and
-                        '\t' in first_line and
-                        first_line.split('\t')[0].isdigit() and
-                        first_line.split('\t')[1].isalpha()
-                    )
-                print(f"{dict_raw_filename} is a Dicelist: {str(is_dicelist).upper()}")
-                pp_utils.process_raw_dictionary(dict_raw_filename, min_word_length, max_word_length, is_dicelist)
-            except Exception as e:
-                print(f"[ERROR] Failed to process {dict_raw_filename}: {e}")
+        if utils_type == 'part':
+            min_partitions = cli.get_arg('minp')
+            max_partitions = cli.get_arg('maxp')
+            min_word_length = cli.get_arg('minw')
+            max_word_length = cli.get_arg('maxw')
+        elif utils_type == 'dict':
+            dict_raw_filename = cli.get_arg('d')
+            print(f'dictionary command activated: {dict_raw_filename}')
+            pp_utils.process_raw_dictionary(dict_raw_filename, min_word_length, max_word_length)
+        elif utils_type == 'utils_command':
+            pp_utils.create_partitions(start_n=min_partitions,
+                                       end_n=max_partitions,
+                                       min_val=min_word_length,
+                                       max_val=max_word_length)
         exit()
 
     h = hibp.HIBP()  # HIBP object
@@ -58,7 +49,6 @@ if __name__ == '__main__':
         verbose = cli.get_arg('verbose')
         color = cli.get_arg('color')
         pwn = cli.get_arg('pwn')
-        language = cli.get_arg('lang')
 
     if ptype == 'pwn':
         # submit the password to HaveIBeenPwned
@@ -67,8 +57,11 @@ if __name__ == '__main__':
         verbose = True
         return_list = [password]
     elif ptype == 'pp':
-        language = cli.get_arg('language')
-        pp = pp.passphrase(verbose=verbose, colorize=color, language=language)
+        dictionary = cli.get_arg('dictionary')
+        start_n = cli.get_arg('start_n')
+        end_n = cli.get_arg('end_n')
+        pp = pp.passphrase(verbose=verbose, colorize=color, dictionary=dictionary,
+                           start_n=start_n, end_n=end_n)
 
         num_words = cli.get_arg('numwords')
         wiki = cli.get_arg('wikipedia')

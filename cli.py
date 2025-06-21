@@ -53,19 +53,40 @@ class CLI:
 
     # process-all: bulk dictionary processing
     proc_all = utils_subparsers.add_parser('process-all', help='Process all raw dictionaries')
-    proc_all.add_argument('-minw','--min-word-length', type=int, default=4, 
+    proc_all.add_argument('-minw','--min-word-length', type=int, default=4,
                           help='Minimum word length (default: 4)')
-    proc_all.add_argument('-maxw','--max-word-length', type=int, default=9, 
+    proc_all.add_argument('-maxw','--max-word-length', type=int, default=9,
                           help='Maximum word length (default: 9)')
+    proc_all.add_argument('--start-n', type=int, default=None,
+                          help='Start partition value (default: min-word-length * 2)')
+    proc_all.add_argument('--end-n', type=int, default=None,
+                          help='End partition value (default: max-word-length * 5)')
 
     # process: single dictionary processing
     proc = utils_subparsers.add_parser('process', help='Process one raw dictionary')
     proc.add_argument('-d','--dictionary', type=str, required=True,
                       help='Raw dictionary filename (with .txt)')
-    proc.add_argument('-minw','--min-word-length', type=int, default=4, 
+    proc.add_argument('-minw','--min-word-length', type=int, default=4,
                       help='Minimum word length (default: 4)')
-    proc.add_argument('-maxw','--max-word-length', type=int, default=9, 
+    proc.add_argument('-maxw','--max-word-length', type=int, default=9,
                       help='Maximum word length (default: 9)')
+    proc.add_argument('--start-n', type=int, default=None,
+                      help='Start partition value (default: min-word-length * 2)')
+    proc.add_argument('--end-n', type=int, default=None,
+                      help='End partition value (default: max-word-length * 5)')
+
+    # part: standalone partition generation
+    part = utils_subparsers.add_parser('part', help='Generate partitions JSON file')
+    part.add_argument('-o','--output', type=str, required=True,
+                      help='Output JSON filename for generated partitions')
+    part.add_argument('-minw','--min-word-length', type=int, default=4,
+                      help='Minimum word length (default: 4)')
+    part.add_argument('-maxw','--max-word-length', type=int, default=9,
+                      help='Maximum word length (default: 9)')
+    part.add_argument('--start-n', type=int, default=None,
+                      help='Start partition value (default: min-word-length * 2)')
+    part.add_argument('--end-n', type=int, default=None,
+                      help='End partition value (default: max-word-length * 5)')
 
     # Add arguments to the pwnage subparser
     pwn_parser.add_argument('password')
@@ -129,10 +150,6 @@ class CLI:
                           help="Submit generated passwords to HaveIBeenPwned to check if they have already been found in a databreach.",
                           action='store_true',
                           default=False)
-    pw_parser.add_argument('-lang',
-                            help="Choose which language (passphrase wordlist) you want to use.",
-                            action='store_true',
-                            default=False)
 
     # Add arguments to the passphrase subparser
     pp_parser.add_argument('-c', '--chars',
@@ -147,10 +164,10 @@ class CLI:
                           help='Colorize the output text.',
                           action='store_true',
                           default=False)
-    pp_parser.add_argument('-lang', '--language', 
-                           help='Choose which language (passphrase wordlist) you want to use.', 
+    pp_parser.add_argument('-d', '--dictionary',
                            type=str,
-                           default=None)
+                           default='eff_large_wordlist',
+                           help='Dictionary base name in cache/ (default: eff_large_wordlist)')
     pp_parser.add_argument('-v', '--verbose',
                           help='Print verbose output.',
                           action='store_true',
@@ -170,6 +187,10 @@ class CLI:
     pp_parser.add_argument('-au', '--augenbaumize',
                           help="Use the Augenbaum method. Default = Don't do it.",
                           default=False)
+    pp_parser.add_argument('--start-n', type=int, default=None,
+                          help='Start partition value (default: min word length * 2)')
+    pp_parser.add_argument('--end-n', type=int, default=None,
+                          help='End partition value (default: max word length * 5)')
     pp_parser.add_argument('-pwn',
                           help="Submit generated passwords to HaveIBeenPwned to check if they have already been found in a databreach.",
                           action='store_true',
