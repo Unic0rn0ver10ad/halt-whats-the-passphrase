@@ -23,20 +23,30 @@ if __name__ == '__main__':
 
     if ptype == 'utils':
         utils_type = cli.get_arg('utils_command')
-        if utils_type == 'part':
-            min_partitions = cli.get_arg('minp')
-            max_partitions = cli.get_arg('maxp')
-            min_word_length = cli.get_arg('minw')
-            max_word_length = cli.get_arg('maxw')
-        elif utils_type == 'dict':
-            dict_raw_filename = cli.get_arg('d')
-            print(f'dictionary command activated: {dict_raw_filename}')
-            pp_utils.process_raw_dictionary(dict_raw_filename, min_word_length, max_word_length)
-        elif utils_type == 'utils_command':
-            pp_utils.create_partitions(start_n=min_partitions,
-                                       end_n=max_partitions,
-                                       min_val=min_word_length,
-                                       max_val=max_word_length)
+        if utils_type == 'process-all':
+            min_word_length = cli.get_arg('min_word_length')
+            max_word_length = cli.get_arg('max_word_length')
+            pp_utils.process_all_dictionaries(min_word_length, max_word_length)
+        elif utils_type == 'process':
+            dict_raw_filename = cli.get_arg('dictionary')
+            min_word_length = cli.get_arg('min_word_length')
+            max_word_length = cli.get_arg('max_word_length')
+            print(f'Processing dictionary: {dict_raw_filename}')
+            # Auto-detect if it's a dicelist
+            dictionary_path = pp_utils.DICTIONARY_DIR / dict_raw_filename
+            try:
+                with dictionary_path.open("r", encoding="utf-8") as file:
+                    first_line = file.readline().strip()
+                    is_dicelist = bool(
+                        first_line and
+                        '\t' in first_line and
+                        first_line.split('\t')[0].isdigit() and
+                        first_line.split('\t')[1].isalpha()
+                    )
+                print(f"{dict_raw_filename} is a Dicelist: {str(is_dicelist).upper()}")
+                pp_utils.process_raw_dictionary(dict_raw_filename, min_word_length, max_word_length, is_dicelist)
+            except Exception as e:
+                print(f"[ERROR] Failed to process {dict_raw_filename}: {e}")
         exit()
 
     h = hibp.HIBP()  # HIBP object
