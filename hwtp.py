@@ -24,22 +24,45 @@ if __name__ == '__main__':
 
     if ptype == 'utils':
         utils_type = cli.get_arg('utils_command')
-        # Always get these arguments, regardless of utils_type
-        min_partitions = cli.get_arg('minp')
-        max_partitions = cli.get_arg('maxp')
-        min_word_length = cli.get_arg('minw')
-        max_word_length = cli.get_arg('maxw')
+        start_n = cli.get_arg('start_n')
+        end_n = cli.get_arg('end_n')
+        min_word_length = cli.get_arg('min_word_length')
+        max_word_length = cli.get_arg('max_word_length')
+
         if utils_type == 'part':
-            pass  # No action needed, just collecting args
-        elif utils_type == 'dict':
-            dict_raw_filename = cli.get_arg('d')
-            print(f'dictionary command activated: {dict_raw_filename}')
-            pp_utils.process_raw_dictionary(dict_raw_filename, min_word_length, max_word_length)
-        elif utils_type == 'utils_command':
-            pp_utils.create_partitions(start_n=min_partitions,
-                                       end_n=max_partitions,
-                                       min_val=min_word_length,
-                                       max_val=max_word_length)
+            output_file = cli.get_arg('output')
+            if output_file is None:
+                print("Output filename required for 'part' command.")
+            else:
+                pp_utils.create_partitions(
+                    partition_path=Path(output_file),
+                    start_n=start_n if start_n is not None else min_word_length * 2,
+                    end_n=end_n if end_n is not None else max_word_length * 5,
+                    min_val=min_word_length,
+                    max_val=max_word_length,
+                )
+
+        elif utils_type == 'process':
+            dict_raw_filename = cli.get_arg('dictionary')
+            if dict_raw_filename is None:
+                print("Dictionary filename required for 'process' command.")
+            else:
+                pp_utils.process_raw_dictionary(
+                    dict_raw_filename,
+                    min_word_length,
+                    max_word_length,
+                    start_n=start_n,
+                    end_n=end_n,
+                )
+
+        elif utils_type == 'process-all':
+            pp_utils.process_all_dictionaries(
+                min_word_length=min_word_length,
+                max_word_length=max_word_length,
+                start_n=start_n,
+                end_n=end_n,
+            )
+
         exit()
 
     h = hibp.HIBP()  # HIBP object
