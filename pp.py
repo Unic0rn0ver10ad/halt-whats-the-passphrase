@@ -26,15 +26,19 @@ from pp_utils import (
 )
 
 class passphrase:
-    def __init__(self, verbose: bool = False, colorize: bool = False, dictionary: str | None = None):
+    def __init__(self, verbose: bool = False, colorize: bool = False,
+                 dictionary: str | None = None,
+                 start_n: int | None = None,
+                 end_n: int | None = None):
         self.verbose = verbose
         self.color = colorize
         self.default_dictionary = "eff_large_wordlist"
         self.dictionary = dictionary or self.default_dictionary
+        self.start_n = start_n
+        self.end_n = end_n
 
         self.wordlist_file = CACHE_DIR / f"{self.dictionary}_filtered.txt"
         self.wordlength_file = CACHE_DIR / f"{self.dictionary}_wordlength.json"
-        self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions.json"
 
         if not dictionary_exists(self.dictionary):
             print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
@@ -66,6 +70,14 @@ class passphrase:
             # 3. Join into a comma-separated string
             out = ", ".join(str(k) for k in keys)
             print(f"  Possible word lengths found from {len(self.wordlength_dict)} : {out}")
+
+        # START/END RANGES AND PARTITION FILE
+        self.start_n = self.start_n if self.start_n is not None else self.min_word_length * 2
+        self.end_n = self.end_n if self.end_n is not None else self.max_word_length * 5
+        if start_n is None and end_n is None:
+            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions.json"
+        else:
+            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions_{self.start_n}_{self.end_n}.json"
 
         # PARTITIONS DICT
         self.partitions_dict = jr(self.partitions_file.name)
