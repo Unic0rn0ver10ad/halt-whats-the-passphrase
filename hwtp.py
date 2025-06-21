@@ -48,7 +48,6 @@ if __name__ == '__main__':
         verbose = cli.get_arg('verbose')
         color = cli.get_arg('color')
         pwn = cli.get_arg('pwn')
-        dictionary = cli.get_arg('dictionary')
 
     if ptype == 'pwn':
         # submit the password to HaveIBeenPwned
