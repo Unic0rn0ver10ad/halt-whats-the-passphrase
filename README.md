@@ -118,6 +118,11 @@ Process all dictionaries in `wordlists/`:
 python hwtp.py utils process-all --start-n 8 --end-n 40
 ```
 
+Generate a standalone partitions file:
+```bash
+python hwtp.py utils part -o partitions.json --start-n 8 --end-n 40
+```
+
 ---
 
 ## 📦 Installation
