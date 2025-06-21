@@ -23,20 +23,30 @@ if __name__ == '__main__':
 
     if ptype == 'utils':
         utils_type = cli.get_arg('utils_command')
-        if utils_type == 'part':
-            min_partitions = cli.get_arg('minp')
-            max_partitions = cli.get_arg('maxp')
-            min_word_length = cli.get_arg('minw')
-            max_word_length = cli.get_arg('maxw')
-        elif utils_type == 'dict':
+        if utils_type == 'process':
             dict_raw_filename = cli.get_arg('d')
-            print(f'dictionary command activated: {dict_raw_filename}')
-            pp_utils.process_raw_dictionary(dict_raw_filename, min_word_length, max_word_length)
-        elif utils_type == 'utils_command':
-            pp_utils.create_partitions(start_n=min_partitions,
-                                       end_n=max_partitions,
-                                       min_val=min_word_length,
-                                       max_val=max_word_length)
+            min_word_length = cli.get_arg('min_word_length')
+            max_word_length = cli.get_arg('max_word_length')
+            start_n = cli.get_arg('start_n')
+            end_n = cli.get_arg('end_n')
+            pp_utils.process_raw_dictionary(
+                dict_raw_filename,
+                min_word_length=min_word_length,
+                max_word_length=max_word_length,
+                start_n=start_n,
+                end_n=end_n,
+            )
+        elif utils_type == 'process-all':
+            min_word_length = cli.get_arg('min_word_length')
+            max_word_length = cli.get_arg('max_word_length')
+            start_n = cli.get_arg('start_n')
+            end_n = cli.get_arg('end_n')
+            pp_utils.process_all_dictionaries(
+                min_word_length=min_word_length,
+                max_word_length=max_word_length,
+                start_n=start_n,
+                end_n=end_n,
+            )
         exit()
 
     h = hibp.HIBP()  # HIBP object
@@ -57,7 +67,10 @@ if __name__ == '__main__':
         return_list = [password]
     elif ptype == 'pp':
         dictionary = cli.get_arg('dictionary')
-        pp = pp.passphrase(verbose=verbose, colorize=color, dictionary=dictionary)
+        start_n = cli.get_arg('start_n')
+        end_n = cli.get_arg('end_n')
+        pp = pp.passphrase(verbose=verbose, colorize=color, dictionary=dictionary,
+                           start_n=start_n, end_n=end_n)
 
         num_words = cli.get_arg('numwords')
         wiki = cli.get_arg('wikipedia')
