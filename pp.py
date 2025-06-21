@@ -22,6 +22,7 @@ from pp_utils import (
     file_generic_read as tr,  # Text Read
     generate_wordlist_from_dictionary as gwfd,
     list_available_dictionaries,
+    dictionary_exists,
 )
 
 class passphrase:
@@ -35,8 +36,7 @@ class passphrase:
         self.wordlength_file = CACHE_DIR / f"{self.dictionary}_wordlength.json"
         self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions.json"
 
-        missing_files = [p for p in [self.wordlist_file, self.wordlength_file, self.partitions_file] if not p.exists()]
-        if missing_files:
+        if not dictionary_exists(self.dictionary):
             print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
             list_available_dictionaries()
             exit(1)

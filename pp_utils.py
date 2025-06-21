@@ -219,3 +219,36 @@ def convert_dicelist_to_dictionary(dictionary_name_in: str) -> Union[List[str], 
     except Exception as error:
         print(f"Couldn't read file: {dictionary_name_in} Error: {error}")
         return False
+
+
+def list_cached_dictionaries() -> List[str]:
+    """Return sorted base names of dictionaries found in the cache directory."""
+    names = set()
+    if not CACHE_DIR.exists():
+        return []
+    for path in CACHE_DIR.glob("*_filtered.txt"):
+        names.add(path.stem.replace("_filtered", ""))
+    for path in CACHE_DIR.glob("*_wordlength.json"):
+        names.add(path.stem.replace("_wordlength", ""))
+    return sorted(names)
+
+
+def dictionary_exists(name: str) -> bool:
+    """Check if the cached dictionary ``name`` has all required files."""
+    reqs = [
+        CACHE_DIR / f"{name}_filtered.txt",
+        CACHE_DIR / f"{name}_wordlength.json",
+        CACHE_DIR / f"{name}_partitions.json",
+    ]
+    return all(p.exists() for p in reqs)
+
+
+def list_available_dictionaries() -> None:
+    """Print a user friendly list of cached dictionaries."""
+    cached = list_cached_dictionaries()
+    if not cached:
+        print("No cached dictionaries available.")
+        return
+    print("Available cached dictionaries:")
+    for name in cached:
+        print(f"  {name}")
