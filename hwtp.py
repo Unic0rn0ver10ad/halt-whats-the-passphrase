@@ -24,11 +24,13 @@ if __name__ == '__main__':
 
     if ptype == 'utils':
         utils_type = cli.get_arg('utils_command')
+        # Always get these arguments, regardless of utils_type
+        min_partitions = cli.get_arg('minp')
+        max_partitions = cli.get_arg('maxp')
+        min_word_length = cli.get_arg('minw')
+        max_word_length = cli.get_arg('maxw')
         if utils_type == 'part':
-            min_partitions = cli.get_arg('minp')
-            max_partitions = cli.get_arg('maxp')
-            min_word_length = cli.get_arg('minw')
-            max_word_length = cli.get_arg('maxw')
+            pass  # No action needed, just collecting args
         elif utils_type == 'dict':
             dict_raw_filename = cli.get_arg('d')
             print(f'dictionary command activated: {dict_raw_filename}')
