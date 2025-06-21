@@ -11,9 +11,13 @@ from functools import lru_cache
 from collections import defaultdict
 from typing import Union, List, Dict
 
-# Constants for directory paths
-DICTIONARY_DIR = Path('wordlists')
-CACHE_DIR = Path('cache')
+# Base directory for locating wordlists and cache regardless of where the
+# script is executed from
+BASE_DIR = Path(__file__).resolve().parent
+
+# Constants for directory paths, resolved relative to this file's location
+DICTIONARY_DIR = BASE_DIR / 'wordlists'
+CACHE_DIR = BASE_DIR / 'cache'
 
 # --------------------------
 # File Handling Utilities
