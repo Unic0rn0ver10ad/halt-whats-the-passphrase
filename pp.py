@@ -20,18 +20,13 @@ from pp_utils import file_generic_read as tr  # Text Read
 from pp_utils import generate_wordlist_from_dictionary as gwfd
 
 class passphrase:
-    def __init__(self, verbose=False, colorize=False, language=False):        
+    def __init__(self, verbose=False, colorize=False, dictionary=None):
         self.verbose = verbose
         self.color = colorize
-        self.language = language
-        self.default_language = "eff_large_wordlist"
-        if not self.language:
-            self.language = self.default_language
-        else:
-            self.language = self.language
-        self.wordlist_file = self.language + "_filtered.txt"
-        self.wordlength_file = self.language + "_wordlength.json"
-        self.partitions_file = self.language + "_partitions.json"
+        self.dictionary = dictionary or "eff_large_wordlist"
+        self.wordlist_file = self.dictionary + "_filtered.txt"
+        self.wordlength_file = self.dictionary + "_wordlength.json"
+        self.partitions_file = self.dictionary + "_partitions.json"
         self.min_word_length = 4  # minimum = hardcoded
         self.max_word_length = 9  # maximum = hardcoded
 

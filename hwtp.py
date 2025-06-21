@@ -48,7 +48,7 @@ if __name__ == '__main__':
         verbose = cli.get_arg('verbose')
         color = cli.get_arg('color')
         pwn = cli.get_arg('pwn')
-        language = cli.get_arg('lang')
+        dictionary = cli.get_arg('dictionary')
 
     if ptype == 'pwn':
         # submit the password to HaveIBeenPwned
@@ -57,8 +57,8 @@ if __name__ == '__main__':
         verbose = True
         return_list = [password]
     elif ptype == 'pp':
-        language = cli.get_arg('language')
-        pp = pp.passphrase(verbose=verbose, colorize=color, language=language)
+        dictionary = cli.get_arg('dictionary')
+        pp = pp.passphrase(verbose=verbose, colorize=color, dictionary=dictionary)
 
         num_words = cli.get_arg('numwords')
         wiki = cli.get_arg('wikipedia')
