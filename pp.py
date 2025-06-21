@@ -25,6 +25,10 @@ from pp_utils import (
     dictionary_exists,
 )
 
+def safe_capitalize(word: str) -> str:
+    """Capitalize first ASCII alphabetic character, if present."""
+    return (word[0].upper() + word[1:]) if word[:1].isalpha() and word[:1].isascii() else word
+
 class passphrase:
     def __init__(self, verbose: bool = False, colorize: bool = False,
                  dictionary: str | None = None,
@@ -163,7 +167,7 @@ class passphrase:
         return result
 
     def get_random_word_of_length(self, length):
-        return self._crypto.choice(self.wordlength_dict[length]).capitalize()
+        return safe_capitalize(self._crypto.choice(self.wordlength_dict[length]))
 
     def colorize_passphrase(self, text):
         colored = ''
@@ -227,5 +231,5 @@ class passphrase:
             w = self._crypto.choice(pool)
             if w not in chosen:
                 chosen.add(w)
-                result.append(w.capitalize())
+                result.append(safe_capitalize(w))
         return result
