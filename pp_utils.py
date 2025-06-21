@@ -110,6 +110,8 @@ def process_all_dictionaries(min_word_length: int = 4, max_word_length: int = 9)
     Automatically detects whether the file is a dicelist based on the first line format.
     """
     for dictionary_path in DICTIONARY_DIR.glob("*.txt"):
+        # validate script goes here
+        # throw error messages if inputs are out of range
         try:
             with dictionary_path.open("r", encoding="utf-8") as file:
                 first_line = file.readline().strip()
