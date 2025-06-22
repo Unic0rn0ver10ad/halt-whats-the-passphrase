@@ -14,6 +14,16 @@ if __name__ == '__main__':
     # CLI object
     cli = cli.CLI()
 
+    # handle top-level options
+    if cli.get_arg('list_dictionaries'):
+        names = pp_utils.list_cached_dictionaries()
+        if names:
+            for name in names:
+                print(name)
+        else:
+            print("No cached dictionaries available.")
+        exit()
+
     # which module are we running?
     ptype = cli.get_arg('subparser_name')
     if ptype is None:
