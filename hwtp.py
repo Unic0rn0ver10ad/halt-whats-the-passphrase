@@ -16,12 +16,13 @@ if __name__ == '__main__':
 
     # handle top-level options
     if cli.get_arg('list_dictionaries'):
+        print("Available dictionaries:")
         names = pp_utils.list_cached_dictionaries()
         if names:
             for name in names:
-                print(name)
+                print(f"  {name}")
         else:
-            print("No cached dictionaries available.")
+            print("  No cached dictionaries available.")
         exit()
 
     # which module are we running?
