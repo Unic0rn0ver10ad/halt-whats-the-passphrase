@@ -237,9 +237,32 @@ class password:
     new_password = ''.join(plist)
     
     if old_password != new_password:
-      if self.verbose is True: self.c.arrow(old_password, ' >===NO CONSECUTIVES===> ', new_password, 'red', 'white', 'green')
+      if self.verbose is True:
+        old_highlight, new_highlight = self.highlight_consecutive_changes(old_password, new_password)
+        print(old_highlight + self.c.color('WHITE') + ' >===NO CONSECUTIVES===> ' + new_highlight + self.c.p(''))
       
     return new_password
+
+  def highlight_consecutive_changes(self, old_password, new_password):
+    """Return colorized strings highlighting changed characters and their
+    preceding characters."""
+
+    changed_indices = {
+      idx for idx, (o_char, n_char) in enumerate(zip(old_password, new_password))
+      if o_char != n_char
+    }
+    highlight_indices = changed_indices | {i - 1 for i in changed_indices if i > 0}
+
+    old_col = str()
+    new_col = str()
+    for idx, (o_char, n_char) in enumerate(zip(old_password, new_password)):
+      if idx in highlight_indices:
+        old_col += self.c.p(o_char, 'red')
+        new_col += self.c.p(n_char, 'green')
+      else:
+        old_col += self.c.p(o_char, 'white')
+        new_col += self.c.p(n_char, 'white')
+    return old_col, new_col
   
   def choose_from_alphabet(self, alphabet, disallow=None):
     # if disallow is not None, iterate until a non-matching entry is produced
