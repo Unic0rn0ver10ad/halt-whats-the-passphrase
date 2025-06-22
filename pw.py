@@ -244,9 +244,8 @@ class password:
   def choose_from_alphabet(self, alphabet, disallow=None):
     # if disallow is not None, iterate until a non-matching entry is produced
     next_char = secrets.choice(alphabet)
-    if disallow is not None:
-      if next_char.lower() == disallow:
-        self.choose_from_alphabet(alphabet, disallow=disallow)
+    if disallow is not None and next_char.lower() == disallow:
+      return self.choose_from_alphabet(alphabet, disallow=disallow)
     return next_char
 
   def shuffle_frame(self, frame):
