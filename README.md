@@ -137,6 +137,7 @@ Clone this repo and run:
 ```bash
 pip install -r requirements.txt
 ```
+This will install the required packages `colorama` and `requests`.
 
 Or simply use the Python file directly if dependencies are already met.
 
@@ -145,7 +146,8 @@ Or simply use the Python file directly if dependencies are already met.
 ## 🛠 Requirements
 
 - Python 3.6+
-- Optional: `requests` (for Wikipedia and pwned lookup features)
+- `colorama`
+- `requests`
 
 ---
 
