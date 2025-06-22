@@ -181,11 +181,23 @@ class passphrase:
         colored += self.c.p('')
         return colored
 
-    def generate_passphrase_wikipedia(self, num_titles=3, num_reps=1, colorize=False, augenbaumize=False, verbose=False):
+    def generate_passphrase_wikipedia(self, num_titles=3, num_reps=1, colorize=False, augenbaumize=False, verbose=False, timeout=5):
         session = requests.Session()
         url = "https://en.wikipedia.org/w/api.php"
-        params = {"action":"query","format":"json","list":"random","rnnamespace":"0","rnlimit":str(num_titles*num_reps)}
-        titles = [item['title'] for item in session.get(url=url, params=params).json()["query"]["random"]]
+        params = {
+            "action": "query",
+            "format": "json",
+            "list": "random",
+            "rnnamespace": "0",
+            "rnlimit": str(num_titles * num_reps),
+        }
+        try:
+            response = session.get(url=url, params=params, timeout=timeout)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            print(f"Failed to fetch titles from Wikipedia: {exc}")
+            return []
+        titles = [item["title"] for item in response.json()["query"]["random"]]
         chunks = list(self.chunker(titles, num_titles))
         if self.verbose:
             for chunk in chunks:
