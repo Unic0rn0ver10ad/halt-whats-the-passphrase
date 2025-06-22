@@ -12,7 +12,7 @@
 - Rich CLI options for customization
 - Optional integration with [Have I Been Pwned](https://haveibeenpwned.com/) to check for compromised passwords
 - Fun, nerdy, and secure
-- Quickly view cached dictionaries with `-ld`
+- Quickly view cached wordlists with `-lw`
 
 ---
 
@@ -109,9 +109,9 @@ python hwtp.py pw -co -n 10 -no u l d -so '@ # $ ='
 
 ### Dictionary Utilities
 
-List cached dictionaries:
+List cached wordlists:
 ```bash
-python hwtp.py -ld
+python hwtp.py -lw
 ```
 
 Process a single dictionary with a custom partition range:
