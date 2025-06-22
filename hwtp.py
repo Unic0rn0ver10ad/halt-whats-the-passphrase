@@ -15,8 +15,8 @@ if __name__ == '__main__':
     cli = cli.CLI()
 
     # handle top-level options
-    if cli.get_arg('list_dictionaries'):
-        print("Available dictionaries:")
+    if cli.get_arg('list_wordlists'):
+        print("Available wordlists:")
         names = pp_utils.list_cached_dictionaries()
         if names:
             for name in names:

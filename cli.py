@@ -23,10 +23,10 @@ class CLI:
 
     # Top level options
     self.arg_parser.add_argument(
-        '-ld',
-        '--list-dictionaries',
+        '-lw',
+        '--list-wordlists',
         action='store_true',
-        help='List available cached dictionaries')
+        help='List available cached wordlists')
 
     # Create the subparser
     subparsers = self.arg_parser.add_subparsers(dest='subparser_name')
