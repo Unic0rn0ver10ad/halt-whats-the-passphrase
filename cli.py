@@ -18,8 +18,15 @@ class CLI:
   def cli(self):
     # Create the parser
     self.arg_parser = argparse.ArgumentParser(
-      description="Halt! What's the Passphrase? generates passphrases as well as traditional passwords. Try the -w Wikipedia passphrase option!", 
+      description="Halt! What's the Passphrase? generates passphrases as well as traditional passwords. Try the -w Wikipedia passphrase option!",
       prog="Halt! What's the Passphrase?")
+
+    # Top level options
+    self.arg_parser.add_argument(
+        '-ld',
+        '--list-dictionaries',
+        action='store_true',
+        help='List available cached dictionaries')
 
     # Create the subparser
     subparsers = self.arg_parser.add_subparsers(dest='subparser_name')
