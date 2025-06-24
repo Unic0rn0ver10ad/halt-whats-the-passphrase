@@ -13,6 +13,7 @@
 - Optional integration with [Have I Been Pwned](https://haveibeenpwned.com/) to check for compromised passwords
 - Fun, nerdy, and secure
 - Quickly view cached wordlists with `-lw`
+- Choose which cached dictionary to use with `-d`
 
 ---
 
@@ -41,6 +42,16 @@ python hwtp.py pp -co -n 20 -au 5@
 Generate 32-character passphrases:
 ```bash
 python hwtp.py pp -co -n 20 -c 32
+```
+
+Use a specific cached dictionary:
+```bash
+python hwtp.py pp -d eff_short_wordlist
+```
+
+Pad the passphrase with a custom string:
+```bash
+python hwtp.py pp -co -pad m0nk3y! 3
 ```
 
 Customize the partition range (advanced):
@@ -92,6 +103,11 @@ Bookended, balanced, and secure:
 python hwtp.py pw -co -nc -ms 3 -md 3 -b -n 20 -c 8 -v
 ```
 
+Check generated passwords against known breaches:
+```bash
+python hwtp.py pw -co -pwn
+```
+
 🔴 Example of a configuration that **won't work**:
 ```bash
 python hwtp.py pw -co -nc -ms 4 -md 4 -b -n 20 -c 8 -v
@@ -118,15 +134,27 @@ Process a single dictionary with a custom partition range:
 ```bash
 python hwtp.py utils process -d mywords.txt --start-n 8 --end-n 40
 ```
+Adjust minimum and maximum word lengths:
+```bash
+python hwtp.py utils process -d mywords.txt -minw 3 -maxw 8
+```
 
 Process all dictionaries in `wordlists/`:
 ```bash
 python hwtp.py utils process-all --start-n 8 --end-n 40
 ```
+With custom word lengths for every dictionary:
+```bash
+python hwtp.py utils process-all -minw 3 -maxw 8
+```
 
 Generate a standalone partitions file:
 ```bash
 python hwtp.py utils part -o partitions.json --start-n 8 --end-n 40
+```
+You can also set word length bounds when generating partitions:
+```bash
+python hwtp.py utils part -o partitions.json -minw 3 -maxw 8
 ```
 
 ---
