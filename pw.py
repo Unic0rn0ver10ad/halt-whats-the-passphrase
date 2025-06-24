@@ -215,51 +215,50 @@ class password:
     return color_password
   
   def de_consecutivize(self, old_password):
-    # replace consecutive characters (AA, aa, Aa, 88, **) with a different character from the same category of characters (alpha, numeric, punctuation)
+    """Replace consecutive duplicate characters with a different character of the same type."""
     plist = list(old_password)
-    a_count = 0
-    b_count = 1
-    while True:
-      a_char = plist[a_count]
-      b_char = plist[b_count]
-      if a_char.lower() == b_char.lower():
-        # replace 'in kind': ABC=>ABC, 012=>012, !@#=>!@#
-        if b_char.isalpha():
-          b_char = self.choose_from_alphabet(self.user_alphas, disallow=a_char)
-        elif b_char.isnumeric():
-          b_char = self.choose_from_alphabet(self.alphabet_digits, disallow=a_char)
-        else:
-          b_char = self.choose_from_alphabet(self.alphabet_specials, disallow=a_char)
-        plist[b_count] = b_char
-      else:
-        a_count += 1
-        b_count += 1
-        if b_count == len(plist):
-          break
-        else:
-          a_char = plist[a_count]
-          b_char = plist[b_count]
-    
+    i = 0
+    while i < len(plist) - 1:
+        if plist[i].lower() == plist[i + 1].lower():
+            if plist[i + 1].isalpha():
+                plist[i + 1] = self.choose_from_alphabet(self.user_alphas, disallow=plist[i])
+            elif plist[i + 1].isnumeric():
+                plist[i + 1] = self.choose_from_alphabet(self.alphabet_digits, disallow=plist[i])
+            else:
+                plist[i + 1] = self.choose_from_alphabet(self.alphabet_specials, disallow=plist[i])
+        i += 1
     new_password = ''.join(plist)
-    
-    if old_password != new_password:
-      if self.verbose is True:
+    if old_password != new_password and self.verbose:
         old_highlight, new_highlight = self.highlight_consecutive_changes(old_password, new_password)
         print(old_highlight + self.c.color('WHITE') + ' >===NO CONSECUTIVES===> ' + new_highlight + self.c.p(''))
-      
     return new_password
 
   def highlight_consecutive_changes(self, old_password, new_password):
-    """Return colorized strings highlighting changed characters."""
-    old_col = str()
-    new_col = str()
-    for o_char, n_char in zip(old_password, new_password):
-      if o_char != n_char:
-        old_col += self.c.p(o_char, 'red')
-        new_col += self.c.p(n_char, 'green')
-      else:
-        old_col += self.c.p(o_char, 'white')
-        new_col += self.c.p(n_char, 'white')
+    """Return colorized strings highlighting changed characters, including both characters in consecutive pairs."""
+    # Find indices of consecutive duplicates in old_password
+    consecutive_indices = set()
+    for i in range(len(old_password) - 1):
+        if old_password[i].lower() == old_password[i + 1].lower():
+            consecutive_indices.add(i)
+            consecutive_indices.add(i + 1)
+
+    # Find indices of changed characters in new_password
+    changed_indices = set()
+    for i, (o_char, n_char) in enumerate(zip(old_password, new_password)):
+        if o_char != n_char:
+            changed_indices.add(i)
+
+    old_col = ""
+    new_col = ""
+    for i, (o_char, n_char) in enumerate(zip(old_password, new_password)):
+        if i in consecutive_indices:
+            old_col += self.c.p(o_char, 'red')
+        else:
+            old_col += self.c.p(o_char, 'white')
+        if i in changed_indices or i in consecutive_indices:
+            new_col += self.c.p(n_char, 'green')
+        else:
+            new_col += self.c.p(n_char, 'white')
     return old_col, new_col
   
   def choose_from_alphabet(self, alphabet, disallow=None):

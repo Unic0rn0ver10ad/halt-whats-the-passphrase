@@ -181,13 +181,7 @@ Or simply use the Python file directly if dependencies are already met.
 
 ## 🧠 License
 
-MIT License – do with it what you will, and make your passwords strong 💪
-
----
-
-## 📸 Screenshot or Demo (Optional)
-
-> _You can add a GIF or screenshot here showing HWTP in action using a tool like [asciinema](https://asciinema.org/) or a static terminal snapshot._
+MIT License – do with it what you will, and may your passphrases not end up in HaveIBeenPwned 💪
 
 ---
 
@@ -200,7 +194,3 @@ Feel free to fork, PR, or raise issues!
 ## 📫 Contact
 
 [Your GitHub Profile or Email]
-
----
-
-> _“Halt! What's the passphrase?” — every good secret door keeper, probably._
