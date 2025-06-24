@@ -6,8 +6,9 @@ https://docs.python.org/3/library/secrets.html
 """
 # LIBRARIES
 import random
-import secrets 
+import secrets
 import string
+from typing import List
 
 # MODULES
 import entropy
@@ -22,7 +23,12 @@ class password:
     # ENTROPY TESTER OBJECT
     self.e = entropy.Entropy()
 
-  def get_password(self, uppercase=True, lowercase=True, digits=True, min_digits=0, specials=True, min_specials=0, specials_override=str(), specials_deny=str(), suppress=list(), no_consecutives=False, extra_shuffle=False, ambiguous=False, bookend=False, colorize=False, verbose=False, num_chars=20, num_reps=1):
+  def get_password(self, uppercase=True, lowercase=True, digits=True, min_digits=0,
+                   specials=True, min_specials=0, specials_override=str(),
+                   specials_deny=str(), suppress=list(), no_consecutives=False,
+                   extra_shuffle=False, ambiguous=False, bookend=False,
+                   colorize=False, verbose=False, num_chars=20,
+                   num_reps=1) -> List[str]:
     """
     Returns a list of (possibly colorized) passwords given the user's paramters.
     Some interesting parameters to note:
@@ -136,14 +142,14 @@ class password:
     
     return self.password_list
 
-  def generate_password_list(self):
+  def generate_password_list(self) -> List[str]:
     return_list = list()
     for n in range(self.num_reps):
       self.password = str()  # the generated password
       self.must_include = list()  # min_digits and min_specials go here
 
       # create a frame (list) to implement bookend
-      self.pw_frame = [-1] * self.num_chars
+      self.pw_frame: List[str] = [str()] * self.num_chars
   
       # include min_digits
       self.must_include += [self.choose_from_alphabet(self.alphabet_digits) for x in range(self.min_digits)]
@@ -158,11 +164,11 @@ class password:
         
       # add min_digits and min_specials to the frame
       for x in self.must_include:
-        self.pw_frame[self.pw_frame.index(-1)] = x
+        self.pw_frame[self.pw_frame.index(str())] = x
   
       # generate the remaining number of characters for the password
       for next_pos, next_item in enumerate(self.pw_frame):
-        if next_item == -1:
+        if next_item == str():
           self.pw_frame[next_pos] = self.choose_from_alphabet(self.alphabet)
       
       # shuffle the frame
