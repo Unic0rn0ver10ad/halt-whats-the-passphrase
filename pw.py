@@ -244,19 +244,11 @@ class password:
     return new_password
 
   def highlight_consecutive_changes(self, old_password, new_password):
-    """Return colorized strings highlighting changed characters and their
-    preceding characters."""
-
-    changed_indices = {
-      idx for idx, (o_char, n_char) in enumerate(zip(old_password, new_password))
-      if o_char != n_char
-    }
-    highlight_indices = changed_indices | {i - 1 for i in changed_indices if i > 0}
-
+    """Return colorized strings highlighting changed characters."""
     old_col = str()
     new_col = str()
-    for idx, (o_char, n_char) in enumerate(zip(old_password, new_password)):
-      if idx in highlight_indices:
+    for o_char, n_char in zip(old_password, new_password):
+      if o_char != n_char:
         old_col += self.c.p(o_char, 'red')
         new_col += self.c.p(n_char, 'green')
       else:
