@@ -19,8 +19,6 @@ from pathlib import Path
 from pp_utils import (
     CACHE_DIR,
     json_read as jr,  # JSON Read
-    file_generic_read as tr,  # Text Read
-    generate_wordlist_from_dictionary as gwfd,
     list_available_dictionaries,
     dictionary_exists,
 )
@@ -41,8 +39,7 @@ class passphrase:
         self.start_n = start_n
         self.end_n = end_n
 
-        self.wordlist_file = CACHE_DIR / f"{self.dictionary}_filtered.txt"
-        self.wordlength_file = CACHE_DIR / f"{self.dictionary}_wordlength.json"
+        self.data_file = CACHE_DIR / f"{self.dictionary}_data.json"
 
         if not dictionary_exists(self.dictionary):
             print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
@@ -52,19 +49,18 @@ class passphrase:
         # instantiate crypto‐secure RNG
         self._crypto = secrets.SystemRandom()
         
-        # WORDLIST
-        self.wordlist = gwfd(self.wordlist_file.name, cache=True)
-        self.wordlist_length = len(self.wordlist)
-        if self.verbose:
-            print(f"Got wordlist: {self.wordlist_file}")
-            print(f"  {self.wordlist_length} words in {self.wordlist_file}")
 
-        # WORDLENGTH DICT
-        self.wordlength_dict = jr(self.wordlength_file.name)
-        self.min_word_length = min(self.wordlength_dict)
-        self.max_word_length = max(self.wordlength_dict)
+        # WORDLENGTH AND PARTITIONS DICTS
+        data = jr(self.data_file.name, convert_keys=False)
+        self.wordlength_dict = {int(k): v for k, v in data.get("wordlength", {}).items()}
+        self.partitions_dict = {int(k): v for k, v in data.get("partitions", {}).items()}
+        self.min_word_length = data.get("min_word_length")
+        self.max_word_length = data.get("max_word_length")
+        if self.min_word_length is None or self.max_word_length is None:
+            self.min_word_length = min(self.wordlength_dict)
+            self.max_word_length = max(self.wordlength_dict)
         if self.verbose:
-            print(f"Imported wordlength dictionary: {self.wordlength_file}")
+            print(f"Imported passphrase data: {self.data_file}")
             # 1. Pull out the keys and convert to int
             keys = list(map(int, self.wordlength_dict.keys()))
 
@@ -75,18 +71,10 @@ class passphrase:
             out = ", ".join(str(k) for k in keys)
             print(f"  Possible word lengths found from {len(self.wordlength_dict)} : {out}")
 
-        # START/END RANGES AND PARTITION FILE
+        # START/END RANGES
         self.start_n = self.start_n if self.start_n is not None else self.min_word_length * 2
         self.end_n = self.end_n if self.end_n is not None else self.max_word_length * 5
-        if start_n is None and end_n is None:
-            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions.json"
-        else:
-            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions_{self.start_n}_{self.end_n}.json"
-
-        # PARTITIONS DICT
-        self.partitions_dict = jr(self.partitions_file.name)
         if self.verbose:
-            print(f"Imported partitions dictionary from: {self.partitions_file}")
             print(f"  Possible partition keys found: {len(self.partitions_dict)}")
             keys = list(map(int, self.partitions_dict.keys()))
             print(f"  Available partition keys: {keys}")

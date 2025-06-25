@@ -72,7 +72,7 @@ def json_read(filename: str, convert_keys: bool = True) -> Union[dict, list, boo
 # --------------------------
 # Partition Generation
 # --------------------------
-def create_partitions(partition_path: Path, start_n: int = 10, end_n: int = 50, min_val: int = 4, max_val: int = 9) -> None:
+def create_partitions(partition_path: Path | None = None, start_n: int = 10, end_n: int = 50, min_val: int = 4, max_val: int = 9) -> dict:
     start_time = time.time()
     partitions_dict = {}
 
@@ -85,8 +85,12 @@ def create_partitions(partition_path: Path, start_n: int = 10, end_n: int = 50, 
         partitions_dict[n] = partitions
 
     total_time = time.time() - start_time
-    json_write(partition_path, partitions_dict)
-    print(f"Partition generation completed. Time: {total_time:.2f} seconds. Results written to {partition_path}.")
+    if partition_path:
+        json_write(partition_path, partitions_dict)
+        print(f"Partition generation completed. Time: {total_time:.2f} seconds. Results written to {partition_path}.")
+    else:
+        print(f"Partition generation completed. Time: {total_time:.2f} seconds.")
+    return partitions_dict
 
 @lru_cache(maxsize=None)
 def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[int]]:
@@ -156,27 +160,30 @@ def process_raw_dictionary(raw_dictionary_filename: str,
 
         wordlist = filter_word_list(wordlist, min_word_length, max_word_length)
 
-        filtered_path = CACHE_DIR / f"{stem}_filtered.txt"
-        if not file_generic_write(filtered_path, '\n'.join(wordlist)):
-            raise RuntimeError("Failed to save filtered wordlist.")
-
-        wordlength_dict_path = CACHE_DIR / f"{stem}_wordlength.json"
-        if not json_write(wordlength_dict_path, generate_wordlength_dict(wordlist)):
-            raise RuntimeError("Failed to write wordlength dictionary.")
+        wordlength_dict = generate_wordlength_dict(wordlist)
 
         sn = start_n if start_n is not None else min_word_length * 2
         en = end_n if end_n is not None else max_word_length * 5
-        if start_n is None and end_n is None:
-            partitions_path = CACHE_DIR / f"{stem}_partitions.json"
-        else:
-            partitions_path = CACHE_DIR / f"{stem}_partitions_{sn}_{en}.json"
-        create_partitions(
-            partition_path=partitions_path,
+
+        partitions_dict = create_partitions(
+            partition_path=None,
             start_n=sn,
             end_n=en,
             min_val=min_word_length,
             max_val=max_word_length
         )
+
+        data_path = CACHE_DIR / f"{stem}_data.json"
+
+        data = {
+            "wordlength": wordlength_dict,
+            "partitions": partitions_dict,
+            "min_word_length": min(wordlength_dict) if wordlength_dict else min_word_length,
+            "max_word_length": max(wordlength_dict) if wordlength_dict else max_word_length,
+        }
+
+        if not json_write(data_path, data):
+            raise RuntimeError("Failed to write combined data file.")
 
         print(f"Processing of {raw_dictionary_filename} completed successfully.")
         return True
@@ -245,19 +252,19 @@ def list_cached_dictionaries() -> List[str]:
     names = set()
     if not CACHE_DIR.exists():
         return []
-    for path in CACHE_DIR.glob("*_filtered.txt"):
-        names.add(path.stem.replace("_filtered", ""))
-    for path in CACHE_DIR.glob("*_wordlength.json"):
-        names.add(path.stem.replace("_wordlength", ""))
+    for path in CACHE_DIR.glob("*_data*.json"):
+        stem = path.stem
+        if "_data_" in stem:
+            names.add(stem.split("_data_")[0])
+        else:
+            names.add(stem.replace("_data", ""))
     return sorted(names)
 
 
 def dictionary_exists(name: str) -> bool:
     """Check if the cached dictionary ``name`` has all required files."""
     reqs = [
-        CACHE_DIR / f"{name}_filtered.txt",
-        CACHE_DIR / f"{name}_wordlength.json",
-        CACHE_DIR / f"{name}_partitions.json",
+        CACHE_DIR / f"{name}_data.json",
     ]
     return all(p.exists() for p in reqs)
 

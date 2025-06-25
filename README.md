@@ -113,6 +113,7 @@ List cached dictionaries:
 ```bash
 python hwtp.py -ld
 ```
+Each processed dictionary produces a `<name>_data.json` file in the `cache/` directory.
 
 Process a single dictionary with a custom partition range:
 ```bash
