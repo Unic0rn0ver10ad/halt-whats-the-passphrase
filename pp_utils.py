@@ -193,9 +193,10 @@ def process_raw_dictionary(raw_dictionary_filename: str,
             print(f"No valid words found in {raw_dictionary_filename}")
             return False
 
-        filtered_path = CACHE_DIR / f"{stem}_filtered.txt"
-        if not file_generic_write(filtered_path, "\n".join(wordlist)):
-            raise RuntimeError("Failed to save filtered wordlist.")
+        # We no longer need the filtered wordlist
+        # filtered_path = CACHE_DIR / f"{stem}_filtered.txt"
+        # if not file_generic_write(filtered_path, "\n".join(wordlist)):
+        #     raise RuntimeError("Failed to save filtered wordlist.")
 
         wordlength_dict = generate_wordlength_dict(wordlist)
 
