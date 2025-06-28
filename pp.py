@@ -60,6 +60,7 @@ class passphrase:
             print(f"Loaded {self.wordlist_length} words from {self.dictionary}")
         self.min_word_length = self.metadata.get("min_word_length", min(self.wordlength_dict))
         self.max_word_length = self.metadata.get("max_word_length", max(self.wordlength_dict))
+        self.min_chars = self.metadata.get("min_chars", 10)
         if self.verbose:
             print(f"Imported dictionary data: {self.data_file}")
             # 1. Pull out the keys and convert to int
@@ -99,10 +100,10 @@ class passphrase:
     def get_passphrase(self, num_chars=20, num_reps=1, num_words=False, verbose=False, augenbaumize=False, pad=False):
         # ERROR CHECKING FOR INPUTS
         if not isinstance(num_chars, int):
-            print(f"Invalid type for num_chars: {num_chars}. Must be an integer between 10 and 100.")
+            print(f"Invalid type for num_chars: {num_chars}. Must be an integer between {self.min_chars} and 100.")
             exit(1)
-        if num_chars < 10 or num_chars > 100:
-            print(f"Invalid number of passphrase chars entered: {num_chars}. Must be between 10 and 100.")
+        if num_chars < self.min_chars or num_chars > 100:
+            print(f"Invalid number of passphrase chars entered: {num_chars}. Must be between {self.min_chars} and 100.")
             exit(1)
         if num_words is not False and not isinstance(num_words, int):
             print(f"Invalid type for num_words: {num_words}. Must be an integer.")

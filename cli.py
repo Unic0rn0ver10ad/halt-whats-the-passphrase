@@ -68,6 +68,8 @@ class CLI:
                           help='Start partition value (default: min-word-length * 2)')
     proc_all.add_argument('--end-n', type=int, default=None,
                           help='End partition value (default: max-word-length * 5)')
+    proc_all.add_argument('--min-chars', type=int, required=True,
+                          help='Minimum passphrase character count to store in metadata')
     proc_all.add_argument('--name', type=str, default=None,
                           help='Display language name for all processed dictionaries')
     proc_all.add_argument('-p', '--partitions', type=str, choices=['true', 'false'],
@@ -89,6 +91,8 @@ class CLI:
                       help='Start partition value (default: min-word-length * 2)')
     proc.add_argument('--end-n', type=int, default=None,
                       help='End partition value (default: max-word-length * 5)')
+    proc.add_argument('--min-chars', type=int, required=True,
+                      help='Minimum passphrase character count to store in metadata')
     proc.add_argument('--name', type=str, default=None,
                       help='Display language name (defaults to dictionary filename)')
     proc.add_argument('-p', '--partitions', type=str, choices=['true', 'false'],
