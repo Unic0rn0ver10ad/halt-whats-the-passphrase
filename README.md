@@ -12,8 +12,8 @@
 - Rich CLI options for customization
 - Optional integration with [Have I Been Pwned](https://haveibeenpwned.com/) to check for compromised passwords
 - Fun, nerdy, and secure
-- Quickly view cached wordlists with `-lw`
-- Choose which cached dictionary to use with `-d`
+- Quickly view cached wordlists with `-lw` (lists are numbered)
+- Choose which cached dictionary to use with `-d` (accepts a number or name)
 
 ---
 
@@ -44,9 +44,11 @@ Generate 32-character passphrases:
 python hwtp.py pp -co -n 20 -c 32
 ```
 
-Use a specific cached dictionary:
+Use a specific cached dictionary by name or number:
 ```bash
 python hwtp.py pp -d eff_short_wordlist
+# or
+python hwtp.py pp -d 3
 ```
 
 Pad the passphrase with a custom string:
@@ -125,7 +127,7 @@ python hwtp.py pw -co -n 10 -no u l d -so '@ # $ ='
 
 ### Dictionary Utilities
 
-List cached wordlists:
+List cached wordlists (numbered for easy selection):
 ```bash
 python hwtp.py -lw
 ```

@@ -16,13 +16,7 @@ if __name__ == '__main__':
 
     # handle top-level options
     if cli.get_arg('list_wordlists'):
-        print("Available wordlists:")
-        names = pp_utils.list_cached_dictionaries()
-        if names:
-            for name in names:
-                print(f"  {name}")
-        else:
-            print("  No cached dictionaries available.")
+        pp_utils.list_available_dictionaries(numbered=True)
         exit()
 
     # which module are we running?
@@ -129,10 +123,26 @@ if __name__ == '__main__':
         return_list = [password]
     elif ptype == 'pp':
         dictionary = cli.get_arg('dictionary')
+        if dictionary:
+            # allow specifying index or filename
+            if dictionary.isdigit():
+                selected = pp_utils.get_dictionary_by_index(int(dictionary))
+                if selected is None:
+                    print(f"[ERROR] Dictionary #{dictionary} not found.")
+                    pp_utils.list_available_dictionaries(numbered=True)
+                    exit(1)
+                dictionary = selected
+            if dictionary.endswith('.txt'):
+                dictionary = Path(dictionary).stem
         start_n = cli.get_arg('start_n')
         end_n = cli.get_arg('end_n')
-        pp = pp.passphrase(verbose=verbose, colorize=color, dictionary=dictionary,
-                           start_n=start_n, end_n=end_n)
+        pp = pp.passphrase(
+            verbose=verbose,
+            colorize=color,
+            dictionary=dictionary,
+            start_n=start_n,
+            end_n=end_n,
+        )
 
         num_words = cli.get_arg('numwords')
         wiki = cli.get_arg('wikipedia')

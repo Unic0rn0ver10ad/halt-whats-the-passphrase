@@ -347,18 +347,30 @@ def list_cached_dictionaries() -> List[str]:
     )
 
 
+def get_dictionary_by_index(index: int) -> str | None:
+    """Return the dictionary name corresponding to ``index`` (1-based)."""
+    cached = list_cached_dictionaries()
+    if 1 <= index <= len(cached):
+        return cached[index - 1]
+    return None
+
+
 def dictionary_exists(name: str) -> bool:
     """Return ``True`` if ``name`` has a processed JSON dictionary."""
     data = CACHE_DIR / f"{name}_data.json"
     return data.exists()
 
 
-def list_available_dictionaries() -> None:
+def list_available_dictionaries(numbered: bool = False) -> None:
     """Print a user friendly list of cached dictionaries."""
     cached = list_cached_dictionaries()
     if not cached:
         print("No cached dictionaries available.")
         return
     print("Available cached dictionaries:")
-    for name in cached:
-        print(f"  {name}")
+    if numbered:
+        for idx, name in enumerate(cached, start=1):
+            print(f"  [{idx}] {name}")
+    else:
+        for name in cached:
+            print(f"  {name}")
