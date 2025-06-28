@@ -195,6 +195,8 @@ Processed dictionaries are stored in `cache/` using a single JSON file:
 }
 ```
 The `partitions` section is optional and only included when available.
+Only this `<name>_data.json` file is required when generating passphrases; the
+previous `_filtered.txt` files are no longer used.
 
 ---
 

@@ -15,12 +15,9 @@ from typing import List
 # Local application imports
 import entropy
 import color
-from pathlib import Path
 from pp_utils import (
     CACHE_DIR,
     json_read as jr,  # JSON Read
-    file_generic_read as tr,  # Text Read
-    generate_wordlist_from_dictionary as gwfd,
     list_available_dictionaries,
     dictionary_exists,
 )
@@ -41,7 +38,6 @@ class passphrase:
         self.start_n = start_n
         self.end_n = end_n
 
-        self.wordlist_file = CACHE_DIR / f"{self.dictionary}_filtered.txt"
         self.data_file = CACHE_DIR / f"{self.dictionary}_data.json"
 
         if not dictionary_exists(self.dictionary):
@@ -52,18 +48,16 @@ class passphrase:
         # instantiate crypto‐secure RNG
         self._crypto = secrets.SystemRandom()
         
-        # WORDLIST
-        self.wordlist = gwfd(self.wordlist_file.name, cache=True)
-        self.wordlist_length = len(self.wordlist)
-        if self.verbose:
-            print(f"Got wordlist: {self.wordlist_file}")
-            print(f"  {self.wordlist_length} words in {self.wordlist_file}")
-
         # LOAD DICTIONARY DATA
         data = jr(self.data_file.name, convert_keys=False)
         self.metadata = data.get("metadata", {}) if isinstance(data, dict) else {}
         wl = data.get("wordlengths", {}) if isinstance(data, dict) else {}
         self.wordlength_dict = {int(k): v for k, v in wl.items()}
+        # WORDLIST rebuilt from wordlength_dict
+        self.wordlist = [w for words in self.wordlength_dict.values() for w in words]
+        self.wordlist_length = len(self.wordlist)
+        if self.verbose:
+            print(f"Loaded {self.wordlist_length} words from {self.dictionary}")
         self.min_word_length = self.metadata.get("min_word_length", min(self.wordlength_dict))
         self.max_word_length = self.metadata.get("max_word_length", max(self.wordlength_dict))
         if self.verbose:
