@@ -142,6 +142,10 @@ Adjust minimum and maximum word lengths:
 ```bash
 python hwtp.py utils process -d mywords.txt --name Swedish -minw 3 -maxw 8
 ```
+Show rejected words during processing:
+```bash
+python hwtp.py utils process -d mywords.txt -v
+```
 
 Process all dictionaries in `wordlists/`:
 ```bash
@@ -154,6 +158,10 @@ python hwtp.py utils process-all -p false
 With custom word lengths for every dictionary:
 ```bash
 python hwtp.py utils process-all -minw 3 -maxw 8
+```
+Verbose output for all dictionaries:
+```bash
+python hwtp.py utils process-all -v
 ```
 
 Generate a standalone partitions file:

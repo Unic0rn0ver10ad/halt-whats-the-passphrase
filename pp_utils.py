@@ -129,7 +129,8 @@ def process_all_dictionaries(min_word_length: int = 4,
                              start_n: int | None = None,
                              end_n: int | None = None,
                              language: str | None = None,
-                             include_partitions: bool = True) -> None:
+                             include_partitions: bool = True,
+                             verbose: bool = False) -> None:
     """
     Process every dictionary file in the wordlists directory.
     Automatically detects whether the file is a dicelist based on the first line format.
@@ -157,7 +158,8 @@ def process_all_dictionaries(min_word_length: int = 4,
                 end_n=end_n,
                 is_dicelist=is_dicelist,
                 language=language or dictionary_path.stem,
-                include_partitions=include_partitions
+                include_partitions=include_partitions,
+                verbose=verbose
             )
         except Exception as e:
             print(f"[ERROR] Failed to process {dictionary_path.name}: {e}")
@@ -169,7 +171,8 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                            end_n: int | None = None,
                            is_dicelist: bool | None = None,
                            language: str | None = None,
-                           include_partitions: bool = True) -> bool:
+                           include_partitions: bool = True,
+                           verbose: bool = False) -> bool:
     """Process a raw dictionary into filtered wordlist and JSON data.
 
     When ``include_partitions`` is ``False`` the resulting JSON omits partition
@@ -195,8 +198,17 @@ def process_raw_dictionary(raw_dictionary_filename: str,
             if is_dicelist else
             generate_wordlist_from_dictionary(raw_dictionary_filename)
         )
-
-        wordlist = filter_word_list(wordlist, min_word_length, max_word_length)
+        original_length = len(wordlist) if wordlist else 0
+        wordlist = filter_word_list(
+            wordlist,
+            min_word_length,
+            max_word_length,
+            verbose=verbose,
+        )
+        rejected_count = original_length - len(wordlist) if wordlist else original_length
+        print(
+            f"Rejected {rejected_count} words from Wordlist {raw_dictionary_filename}"
+        )
         if not wordlist:
             print(f"No valid words found in {raw_dictionary_filename}")
             return False
@@ -260,7 +272,10 @@ def generate_wordlist_from_dictionary(dictionary_name_in: str, cache: bool = Fal
         print(f"Couldn't read file from {loc}: {dictionary_name_in} Error: {error}")
         return False
 
-def filter_word_list(word_list: List[str], min_word_length: int, max_word_length: int) -> Union[List[str], bool]:
+def filter_word_list(word_list: List[str],
+                     min_word_length: int,
+                     max_word_length: int,
+                     verbose: bool = False) -> Union[List[str], bool]:
     try:
         return_list = []
         for next_word in word_list:
@@ -268,7 +283,8 @@ def filter_word_list(word_list: List[str], min_word_length: int, max_word_length
             if next_word.isalpha() and min_word_length <= wl <= max_word_length:
                 return_list.append(next_word.lower())
             else:
-                print(f'rejected: {next_word}')
+                if verbose:
+                    print(f'rejected: {next_word}')
         return return_list
     except Exception as error:
         print(f"Couldn't edit word_list: {error}")
