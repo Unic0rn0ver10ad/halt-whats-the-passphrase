@@ -132,11 +132,11 @@ python hwtp.py -lw
 
 Process a single dictionary with a custom partition range:
 ```bash
-python hwtp.py utils process -d mywords.txt --start-n 8 --end-n 40
+python hwtp.py utils process -d mywords.txt --name Swedish --start-n 8 --end-n 40
 ```
 Adjust minimum and maximum word lengths:
 ```bash
-python hwtp.py utils process -d mywords.txt -minw 3 -maxw 8
+python hwtp.py utils process -d mywords.txt --name Swedish -minw 3 -maxw 8
 ```
 
 Process all dictionaries in `wordlists/`:
@@ -156,6 +156,29 @@ You can also set word length bounds when generating partitions:
 ```bash
 python hwtp.py utils part -o partitions.json -minw 3 -maxw 8
 ```
+
+### Dictionary JSON Format
+
+Processed dictionaries are stored in `cache/` using a single JSON file:
+
+```json
+{
+  "metadata": {
+    "language": "English",
+    "has_partitions": true,
+    "min_word_length": 4,
+    "max_word_length": 9
+  },
+  "wordlengths": {
+    "4": ["haze", "iris"],
+    "5": ["brisk", "noble"]
+  },
+  "partitions": {
+    "8": [[4,4], [8]]
+  }
+}
+```
+The `partitions` section is optional and only included when available.
 
 ---
 
