@@ -110,6 +110,9 @@ class CLI:
                       help='Start partition value (default: min-word-length * 2)')
     part.add_argument('--end-n', type=int, default=None,
                       help='End partition value (default: max-word-length * 5)')
+    part.add_argument('-v', '--verbose',
+                      action='store_true',
+                      help='Print verbose output (show partition details)')
 
     # Add arguments to the pwnage subparser
     pwn_parser.add_argument('password')
