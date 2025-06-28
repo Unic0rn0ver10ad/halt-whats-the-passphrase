@@ -233,16 +233,17 @@ def process_raw_dictionary(raw_dictionary_filename: str,
             return False
 
         missing_lengths = [
-            str(n) for n in range(min_word_length, max_word_length + 1)
-            if str(n) not in wordlength_dict
+            n for n in range(min_word_length, max_word_length + 1)
+            if n not in wordlength_dict
         ]
 
         if missing_lengths:
             rec_min = actual_lengths[0]
             rec_max = actual_lengths[-1]
+            missing_str = ', '.join(str(n) for n in missing_lengths)
             print(
                 "[ERROR] The selected word length range does not match the "
-                f"dictionary contents. Missing lengths: {', '.join(missing_lengths)}."
+                f"dictionary contents. Missing lengths: {missing_str}."
             )
             print(f"Try --min-word-length {rec_min} --max-word-length {rec_max}")
             return False
