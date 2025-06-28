@@ -76,7 +76,7 @@ if __name__ == '__main__':
             if dict_raw_filename is None:
                 print("Dictionary filename required for 'process' command.")
             else:
-                pp_utils.process_raw_dictionary(
+                pp_utils.process_dictionary(
                     dict_raw_filename,
                     min_word_length,
                     max_word_length,

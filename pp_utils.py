@@ -19,16 +19,16 @@ BASE_DIR = Path(__file__).resolve().parent
 DICTIONARY_DIR = BASE_DIR / 'wordlists'
 CACHE_DIR = BASE_DIR / 'cache'
 
-# --------------------------
-# File Handling Utilities
-# --------------------------
-def file_generic_read(path_to_file: Path) -> Union[str, bool]:
-    try:
-        with path_to_file.open("r", encoding="utf-8") as my_file:
-            return my_file.read()
-    except Exception as error:
-        print(f"Couldn't read file: {path_to_file} Error: {error}")
-        return False
+# --------------- #
+# File Utilities  #
+# --------------- #
+# def file_generic_read(path_to_file: Path) -> Union[str, bool]:
+#     try:
+#         with path_to_file.open("r", encoding="utf-8") as my_file:
+#             return my_file.read()
+#     except Exception as error:
+#         print(f"Couldn't read file: {path_to_file} Error: {error}")
+#         return False
 
 def file_generic_write(path_to_file: Path, data_to_save: str) -> bool:
     try:
@@ -69,9 +69,11 @@ def json_read(filename: str, convert_keys: bool = True) -> Union[dict, list, boo
         print(f"[ERROR] Failed to read JSON file: {path}. Error: {e}")
         return False
 
-# --------------------------
-# Partition Generation
-# --------------------------
+# ---------------------#
+# Partition Generation #
+# ---------------------#
+
+# Brute Force Method
 def create_partitions(
     partition_path: Path | None = None,
     start_n: int = 10,
@@ -125,9 +127,9 @@ def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[i
 
     return [list(partition) for partition in partitions]
 
-# --------------------------
-# Dictionary Utilities
-# --------------------------
+# -------------------- #
+# Dictionary Utilities #
+# -------------------- #
 def process_all_dictionaries(min_word_length: int = 4,
                              max_word_length: int = 9,
                              start_n: int | None = None,
@@ -159,7 +161,7 @@ def process_all_dictionaries(min_word_length: int = 4,
                     first_line.split('\t')[1].isalpha()
                 )
             print(f"{dictionary_path.name} is a Dicelist: {str(is_dicelist).upper()}")
-            process_raw_dictionary(
+            process_dictionary(
                 raw_dictionary_filename=dictionary_path.name,
                 min_word_length=min_word_length,
                 max_word_length=max_word_length,
@@ -174,7 +176,7 @@ def process_all_dictionaries(min_word_length: int = 4,
         except Exception as e:
             print(f"[ERROR] Failed to process {dictionary_path.name}: {e}")
 
-def process_raw_dictionary(raw_dictionary_filename: str,
+def process_dictionary(raw_dictionary_filename: str,
                            min_word_length: int = 4,
                            max_word_length: int = 9,
                            start_n: int | None = None,
@@ -288,7 +290,7 @@ def process_raw_dictionary(raw_dictionary_filename: str,
 
 def generate_wordlist_from_dictionary(dictionary_name_in: str, cache: bool = False) -> Union[List[str], bool]:
     """
-    Load a wordlist from a dictionary file.
+    Create a wordlist from a dictionary file.
     If cache is True, looks in CACHE_DIR; otherwise, looks in DICTIONARY_DIR.
     `dictionary_name_in` should be the filename including extension.
     """
@@ -320,13 +322,13 @@ def filter_word_list(word_list: List[str],
         print(f"Couldn't edit word_list: {error}")
         return False
 
-def save_wordlist_as_dictionary(wordlist: List[str], dictionary_name_out: str) -> bool:
-    try:
-        dictionary_path_out = CACHE_DIR / dictionary_name_out
-        return file_generic_write(dictionary_path_out, '\n'.join(wordlist))
-    except Exception as error:
-        print(f"Couldn't write file: {dictionary_name_out} Error: {error}")
-        return False
+# def save_wordlist_as_dictionary(wordlist: List[str], dictionary_name_out: str) -> bool:
+#     try:
+#         dictionary_path_out = CACHE_DIR / dictionary_name_out
+#         return file_generic_write(dictionary_path_out, '\n'.join(wordlist))
+#     except Exception as error:
+#         print(f"Couldn't write file: {dictionary_name_out} Error: {error}")
+#         return False
 
 def generate_wordlength_dict(word_list: List[str]) -> Dict[int, List[str]]:
     try:
@@ -336,7 +338,7 @@ def generate_wordlength_dict(word_list: List[str]) -> Dict[int, List[str]]:
         return {}
 
 def convert_dicelist_to_dictionary(dictionary_name_in: str) -> Union[List[str], bool]:
-    """Convert a standard Diceware style list to a simple word list."""
+    # Convert a standard EFF-style Diceware list to a simple word list.
     try:
         dictionary_path_in = DICTIONARY_DIR / dictionary_name_in
         words: List[str] = []
@@ -350,7 +352,6 @@ def convert_dicelist_to_dictionary(dictionary_name_in: str) -> Union[List[str], 
         print(f"Couldn't read file: {dictionary_name_in} Error: {error}")
         return False
 
-
 def list_cached_dictionaries() -> List[str]:
     """Return sorted base names of dictionaries found in the cache directory."""
     if not CACHE_DIR.exists():
@@ -360,7 +361,6 @@ def list_cached_dictionaries() -> List[str]:
         for path in CACHE_DIR.glob("*_data.json")
     )
 
-
 def get_dictionary_by_index(index: int) -> str | None:
     """Return the dictionary name corresponding to ``index`` (1-based)."""
     cached = list_cached_dictionaries()
@@ -368,12 +368,10 @@ def get_dictionary_by_index(index: int) -> str | None:
         return cached[index - 1]
     return None
 
-
 def dictionary_exists(name: str) -> bool:
     """Return ``True`` if ``name`` has a processed JSON dictionary."""
     data = CACHE_DIR / f"{name}_data.json"
     return data.exists()
-
 
 def print_cached_dictionaries(numbered: bool = False) -> None:
     """Print a user-friendly list of cached dictionaries."""
