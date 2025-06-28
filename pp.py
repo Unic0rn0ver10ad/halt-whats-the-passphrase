@@ -42,7 +42,7 @@ class passphrase:
 
         if not dictionary_exists(self.dictionary):
             print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
-            list_available_dictionaries()
+            list_available_dictionaries(numbered=True)
             exit(1)
 
         # instantiate crypto‐secure RNG
