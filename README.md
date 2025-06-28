@@ -134,6 +134,10 @@ Process a single dictionary with a custom partition range:
 ```bash
 python hwtp.py utils process -d mywords.txt --name Swedish --start-n 8 --end-n 40
 ```
+Skip partition generation:
+```bash
+python hwtp.py utils process -d mywords.txt --name Swedish -p false
+```
 Adjust minimum and maximum word lengths:
 ```bash
 python hwtp.py utils process -d mywords.txt --name Swedish -minw 3 -maxw 8
@@ -142,6 +146,10 @@ python hwtp.py utils process -d mywords.txt --name Swedish -minw 3 -maxw 8
 Process all dictionaries in `wordlists/`:
 ```bash
 python hwtp.py utils process-all --start-n 8 --end-n 40
+```
+Skip partitions for all dictionaries:
+```bash
+python hwtp.py utils process-all -p false
 ```
 With custom word lengths for every dictionary:
 ```bash

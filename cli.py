@@ -70,6 +70,9 @@ class CLI:
                           help='End partition value (default: max-word-length * 5)')
     proc_all.add_argument('--name', type=str, default=None,
                           help='Display language name for all processed dictionaries')
+    proc_all.add_argument('-p', '--partitions', type=str, choices=['true', 'false'],
+                          default='true',
+                          help='Generate partitions and include them in data (default: true)')
 
     # process: single dictionary processing
     proc = utils_subparsers.add_parser('process', help='Process one raw dictionary')
@@ -85,6 +88,9 @@ class CLI:
                       help='End partition value (default: max-word-length * 5)')
     proc.add_argument('--name', type=str, default=None,
                       help='Display language name (defaults to dictionary filename)')
+    proc.add_argument('-p', '--partitions', type=str, choices=['true', 'false'],
+                      default='true',
+                      help='Generate partitions and include them in data (default: true)')
 
     # part: standalone partition generation
     part = utils_subparsers.add_parser('part', help='Generate partitions JSON file')

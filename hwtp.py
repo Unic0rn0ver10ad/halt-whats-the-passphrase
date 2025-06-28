@@ -39,6 +39,25 @@ if __name__ == '__main__':
         end_n = cli.get_arg('end_n')
         min_word_length = cli.get_arg('min_word_length')
         max_word_length = cli.get_arg('max_word_length')
+        part_choice = cli.get_arg('partitions')
+        include_partitions = False if str(part_choice).lower() == 'false' else True
+
+        if include_partitions:
+            if start_n is None or end_n is None:
+                print("Both --start-n and --end-n must be specified when -p true.")
+                exit(1)
+            if not isinstance(start_n, int) or not isinstance(end_n, int):
+                print("--start-n and --end-n must be integers.")
+                exit(1)
+            if start_n < 1:
+                print("--start-n must be 1 or greater.")
+                exit(1)
+            if start_n >= end_n:
+                print("--start-n must be less than --end-n.")
+                exit(1)
+            if end_n > 50:
+                print("--end-n cannot be greater than 50.")
+                exit(1)
 
         if utils_type == 'part':
             output_file = cli.get_arg('output')
@@ -66,6 +85,7 @@ if __name__ == '__main__':
                     start_n=start_n,
                     end_n=end_n,
                     language=lang_name or Path(dict_raw_filename).stem,
+                    include_partitions=include_partitions,
                 )
 
         elif utils_type == 'process-all':
@@ -76,6 +96,7 @@ if __name__ == '__main__':
                 start_n=start_n,
                 end_n=end_n,
                 language=lang_name,
+                include_partitions=include_partitions,
             )
 
         exit()
