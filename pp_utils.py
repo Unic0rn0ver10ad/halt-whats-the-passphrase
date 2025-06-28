@@ -132,6 +132,7 @@ def process_all_dictionaries(min_word_length: int = 4,
                              max_word_length: int = 9,
                              start_n: int | None = None,
                              end_n: int | None = None,
+                             min_chars: int | None = None,
                              language: str | None = None,
                              include_partitions: bool = True,
                              verbose: bool = False) -> None:
@@ -141,6 +142,10 @@ def process_all_dictionaries(min_word_length: int = 4,
     ``include_partitions`` determines whether partition data is generated and
     stored in the resulting JSON files.
     """
+    if min_chars is None:
+        print("[ERROR] --min-chars is required when processing dictionaries.")
+        return
+
     for dictionary_path in DICTIONARY_DIR.glob("*.txt"):
         # validate script goes here
         # throw error messages if inputs are out of range
@@ -163,6 +168,7 @@ def process_all_dictionaries(min_word_length: int = 4,
                 is_dicelist=is_dicelist,
                 language=language or dictionary_path.stem,
                 include_partitions=include_partitions,
+                min_chars=min_chars,
                 verbose=verbose
             )
         except Exception as e:
@@ -175,6 +181,7 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                            end_n: int | None = None,
                            is_dicelist: bool | None = None,
                            language: str | None = None,
+                           min_chars: int | None = None,
                            include_partitions: bool = True,
                            verbose: bool = False) -> bool:
     """Process a raw dictionary into filtered wordlist and JSON data.
@@ -183,6 +190,9 @@ def process_raw_dictionary(raw_dictionary_filename: str,
     data and sets ``has_partitions`` to ``false`` in the metadata.
     """
     print(f"Processing {raw_dictionary_filename}")
+    if min_chars is None:
+        print("[ERROR] --min-chars is required when processing dictionaries.")
+        return False
     try:
         stem = Path(raw_dictionary_filename).stem
         lang_name = language or "Unknown"
@@ -244,6 +254,7 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                 "has_partitions": bool(partitions_dict),
                 "min_word_length": min_word_length,
                 "max_word_length": max_word_length,
+                "min_chars": min_chars,
             },
             "wordlengths": {str(k): v for k, v in wordlength_dict.items()},
         }

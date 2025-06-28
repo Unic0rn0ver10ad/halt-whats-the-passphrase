@@ -78,6 +78,7 @@ if __name__ == '__main__':
             dict_raw_filename = cli.get_arg('dictionary')
             lang_name = cli.get_arg('name')
             verbose = cli.get_arg('verbose')
+            min_chars = cli.get_arg('min_chars')
             if dict_raw_filename is None:
                 print("Dictionary filename required for 'process' command.")
             else:
@@ -89,17 +90,20 @@ if __name__ == '__main__':
                     end_n=end_n,
                     language=lang_name or Path(dict_raw_filename).stem,
                     include_partitions=include_partitions,
+                    min_chars=min_chars,
                     verbose=verbose,
                 )
 
         elif utils_type == 'process-all':
             lang_name = cli.get_arg('name')
             verbose = cli.get_arg('verbose')
+            min_chars = cli.get_arg('min_chars')
             pp_utils.process_all_dictionaries(
                 min_word_length=min_word_length,
                 max_word_length=max_word_length,
                 start_n=start_n,
                 end_n=end_n,
+                min_chars=min_chars,
                 language=lang_name,
                 include_partitions=include_partitions,
                 verbose=verbose,

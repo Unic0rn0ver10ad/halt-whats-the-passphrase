@@ -134,6 +134,10 @@ Process a single dictionary with a custom partition range:
 ```bash
 python hwtp.py utils process -d mywords.txt --name Swedish --start-n 8 --end-n 40
 ```
+Set the minimum passphrase length stored in metadata:
+```bash
+python hwtp.py utils process -d mywords.txt --name Swedish --min-chars 10
+```
 Skip partition generation:
 ```bash
 python hwtp.py utils process -d mywords.txt --name Swedish -p false
@@ -150,6 +154,10 @@ python hwtp.py utils process -d mywords.txt -v
 Process all dictionaries in `wordlists/`:
 ```bash
 python hwtp.py utils process-all --start-n 8 --end-n 40
+```
+Set a minimum length for all processed dictionaries:
+```bash
+python hwtp.py utils process-all --start-n 8 --end-n 40 --min-chars 10
 ```
 Skip partitions for all dictionaries:
 ```bash
@@ -183,7 +191,8 @@ Processed dictionaries are stored in `cache/` using a single JSON file:
     "language": "English",
     "has_partitions": true,
     "min_word_length": 4,
-    "max_word_length": 9
+    "max_word_length": 9,
+    "min_chars": 10
   },
   "wordlengths": {
     "4": ["haze", "iris"],
