@@ -163,7 +163,7 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                            max_word_length: int = 9,
                            start_n: int | None = None,
                            end_n: int | None = None,
-                           is_dicelist: bool = False,
+                           is_dicelist: bool | None = None,
                            language: str | None = None,
                            include_partitions: bool = True) -> bool:
     """Process a raw dictionary into filtered wordlist and JSON data."""
@@ -172,6 +172,16 @@ def process_raw_dictionary(raw_dictionary_filename: str,
         stem = Path(raw_dictionary_filename).stem
         lang_name = language or "Unknown"
 
+        if is_dicelist is None:
+            try:
+                with (DICTIONARY_DIR / raw_dictionary_filename).open("r", encoding="utf-8") as file:
+                    first_line = file.readline().strip()
+                    is_dicelist = bool(
+                        first_line and "\t" in first_line and first_line.split("\t")[0].isdigit()
+                    )
+            except Exception:
+                is_dicelist = False
+
         wordlist = (
             convert_dicelist_to_dictionary(raw_dictionary_filename)
             if is_dicelist else
@@ -179,6 +189,9 @@ def process_raw_dictionary(raw_dictionary_filename: str,
         )
 
         wordlist = filter_word_list(wordlist, min_word_length, max_word_length)
+        if not wordlist:
+            print(f"No valid words found in {raw_dictionary_filename}")
+            return False
 
         filtered_path = CACHE_DIR / f"{stem}_filtered.txt"
         if not file_generic_write(filtered_path, "\n".join(wordlist)):
@@ -268,10 +281,16 @@ def generate_wordlength_dict(word_list: List[str]) -> Dict[int, List[str]]:
         return {}
 
 def convert_dicelist_to_dictionary(dictionary_name_in: str) -> Union[List[str], bool]:
+    """Convert a standard Diceware style list to a simple word list."""
     try:
         dictionary_path_in = DICTIONARY_DIR / dictionary_name_in
+        words: List[str] = []
         with dictionary_path_in.open("r", encoding="utf-8") as in_file:
-            return [x.replace('\t', ' ').rstrip().split(' ')[1] for x in in_file]
+            for line in in_file:
+                parts = line.strip().split()
+                if len(parts) >= 2:
+                    words.append(parts[1].lower())
+        return words
     except Exception as error:
         print(f"Couldn't read file: {dictionary_name_in} Error: {error}")
         return False
