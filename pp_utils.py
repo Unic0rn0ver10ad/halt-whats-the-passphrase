@@ -234,6 +234,26 @@ def process_raw_dictionary(raw_dictionary_filename: str,
 
         wordlength_dict = generate_wordlength_dict(wordlist)
 
+        actual_lengths = sorted(wordlength_dict)
+        if not actual_lengths:
+            print(f"[ERROR] No words remain after filtering {raw_dictionary_filename}")
+            return False
+        missing_lengths = [
+            n for n in range(min_word_length, max_word_length + 1)
+            if n not in wordlength_dict
+        ]
+        if missing_lengths:
+            rec_min = actual_lengths[0]
+            rec_max = actual_lengths[-1]
+            print(
+                "[ERROR] The selected word length range does not match the"
+                f" dictionary contents. Missing lengths: {missing_lengths}."
+            )
+            print(
+                f"Try --min-word-length {rec_min} --max-word-length {rec_max}"
+            )
+            return False
+
         sn = start_n if start_n is not None else min_word_length * 2
         en = end_n if end_n is not None else max_word_length * 5
 
