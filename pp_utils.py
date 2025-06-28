@@ -184,11 +184,7 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                            min_chars: int | None = None,
                            include_partitions: bool = True,
                            verbose: bool = False) -> bool:
-    """Process a raw dictionary into filtered wordlist and JSON data.
 
-    When ``include_partitions`` is ``False`` the resulting JSON omits partition
-    data and sets ``has_partitions`` to ``false`` in the metadata.
-    """
     print(f"Processing {raw_dictionary_filename}")
     if min_chars is None:
         print("[ERROR] --min-chars is required when processing dictionaries.")
@@ -220,38 +216,35 @@ def process_raw_dictionary(raw_dictionary_filename: str,
             verbose=verbose,
         )
         rejected_count = original_length - len(wordlist) if wordlist else original_length
-        print(
+        if verbose:
+            print(
             f"Rejected {rejected_count} words from Wordlist {raw_dictionary_filename}"
-        )
+            )
         if not wordlist:
             print(f"No valid words found in {raw_dictionary_filename}")
             return False
 
-        # We no longer need the filtered wordlist
-        # filtered_path = CACHE_DIR / f"{stem}_filtered.txt"
-        # if not file_generic_write(filtered_path, "\n".join(wordlist)):
-        #     raise RuntimeError("Failed to save filtered wordlist.")
-
         wordlength_dict = generate_wordlength_dict(wordlist)
 
+        # validate wordlength_dict
         actual_lengths = sorted(wordlength_dict)
         if not actual_lengths:
             print(f"[ERROR] No words remain after filtering {raw_dictionary_filename}")
             return False
+
         missing_lengths = [
-            n for n in range(min_word_length, max_word_length + 1)
-            if n not in wordlength_dict
+            str(n) for n in range(min_word_length, max_word_length + 1)
+            if str(n) not in wordlength_dict
         ]
+
         if missing_lengths:
             rec_min = actual_lengths[0]
             rec_max = actual_lengths[-1]
             print(
-                "[ERROR] The selected word length range does not match the"
-                f" dictionary contents. Missing lengths: {missing_lengths}."
+                "[ERROR] The selected word length range does not match the "
+                f"dictionary contents. Missing lengths: {', '.join(missing_lengths)}."
             )
-            print(
-                f"Try --min-word-length {rec_min} --max-word-length {rec_max}"
-            )
+            print(f"Try --min-word-length {rec_min} --max-word-length {rec_max}")
             return False
 
         sn = start_n if start_n is not None else min_word_length * 2

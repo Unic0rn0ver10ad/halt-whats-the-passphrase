@@ -15,4 +15,4 @@ This file provides guidance for the Codex agent when working with this repositor
 2. **Dependencies**: Run `python -m pip install -r requirements.txt` before executing scripts that require external packages.
 3. **Testing**: There are no tests to run. If new tests are added, use `pytest`.
 4. **File Scope**: This file applies to the entire repository. There are currently no nested `AGENTS.md` files.
-
+5. **Prefer List Comprehensions, Dict Comprehensions, and Generators to Verbose Code**: Use Python list comprehensions, dict comprehensions, and generator functions wherever possible to minimize the number of lines of code created, while stil maintaining identical functionality. This is in keeping with the Pythonic idiom of "code is read more often than it is written." Also, these comprehensions are more performant than verbose (multi-line) code.
