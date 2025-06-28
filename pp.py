@@ -18,7 +18,7 @@ import color
 from pp_utils import (
     CACHE_DIR,
     json_read as jr,  # JSON Read
-    list_available_dictionaries,
+    print_cached_dictionaries,
     dictionary_exists,
 )
 
@@ -42,7 +42,7 @@ class passphrase:
 
         if not dictionary_exists(self.dictionary):
             print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
-            list_available_dictionaries(numbered=True)
+            print_cached_dictionaries(numbered=True)
             exit(1)
 
         # instantiate crypto‐secure RNG

@@ -375,8 +375,8 @@ def dictionary_exists(name: str) -> bool:
     return data.exists()
 
 
-def list_available_dictionaries(numbered: bool = False) -> None:
-    """Print a user friendly list of cached dictionaries."""
+def print_cached_dictionaries(numbered: bool = False) -> None:
+    """Print a user-friendly list of cached dictionaries."""
     cached = list_cached_dictionaries()
     if not cached:
         print("No cached dictionaries available.")
