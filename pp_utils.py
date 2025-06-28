@@ -128,10 +128,13 @@ def process_all_dictionaries(min_word_length: int = 4,
                              max_word_length: int = 9,
                              start_n: int | None = None,
                              end_n: int | None = None,
-                             language: str | None = None) -> None:
+                             language: str | None = None,
+                             include_partitions: bool = True) -> None:
     """
     Process every dictionary file in the wordlists directory.
     Automatically detects whether the file is a dicelist based on the first line format.
+    ``include_partitions`` determines whether partition data is generated and
+    stored in the resulting JSON files.
     """
     for dictionary_path in DICTIONARY_DIR.glob("*.txt"):
         # validate script goes here
@@ -153,7 +156,8 @@ def process_all_dictionaries(min_word_length: int = 4,
                 start_n=start_n,
                 end_n=end_n,
                 is_dicelist=is_dicelist,
-                language=language or dictionary_path.stem
+                language=language or dictionary_path.stem,
+                include_partitions=include_partitions
             )
         except Exception as e:
             print(f"[ERROR] Failed to process {dictionary_path.name}: {e}")
@@ -166,7 +170,11 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                            is_dicelist: bool | None = None,
                            language: str | None = None,
                            include_partitions: bool = True) -> bool:
-    """Process a raw dictionary into filtered wordlist and JSON data."""
+    """Process a raw dictionary into filtered wordlist and JSON data.
+
+    When ``include_partitions`` is ``False`` the resulting JSON omits partition
+    data and sets ``has_partitions`` to ``false`` in the metadata.
+    """
     print(f"Processing {raw_dictionary_filename}")
     try:
         stem = Path(raw_dictionary_filename).stem
