@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     # handle top-level options
     if cli.get_arg('list_wordlists'):
-        pp_utils.list_available_dictionaries(numbered=True)
+        pp_utils.print_cached_dictionaries(numbered=True)
         exit()
 
     # which module are we running?
@@ -129,7 +129,7 @@ if __name__ == '__main__':
                 selected = pp_utils.get_dictionary_by_index(int(dictionary))
                 if selected is None:
                     print(f"[ERROR] Dictionary #{dictionary} not found.")
-                    pp_utils.list_available_dictionaries(numbered=True)
+                    pp_utils.print_cached_dictionaries(numbered=True)
                     exit(1)
                 dictionary = selected
             if dictionary.endswith('.txt'):
