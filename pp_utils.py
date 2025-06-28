@@ -323,31 +323,18 @@ def convert_dicelist_to_dictionary(dictionary_name_in: str) -> Union[List[str], 
 
 def list_cached_dictionaries() -> List[str]:
     """Return sorted base names of dictionaries found in the cache directory."""
-    names = set()
     if not CACHE_DIR.exists():
         return []
-    for path in CACHE_DIR.glob("*_filtered.txt"):
-        names.add(path.stem.replace("_filtered", ""))
-    for path in CACHE_DIR.glob("*_data.json"):
-        names.add(path.stem.replace("_data", ""))
-    for path in CACHE_DIR.glob("*_wordlength.json"):
-        names.add(path.stem.replace("_wordlength", ""))
-    return sorted(names)
+    return sorted(
+        path.stem.replace("_data", "")
+        for path in CACHE_DIR.glob("*_data.json")
+    )
 
 
 def dictionary_exists(name: str) -> bool:
-    """Check if the cached dictionary ``name`` has all required files."""
-    txt = CACHE_DIR / f"{name}_filtered.txt"
+    """Return ``True`` if ``name`` has a processed JSON dictionary."""
     data = CACHE_DIR / f"{name}_data.json"
-    if txt.exists() and data.exists():
-        return True
-    # fall back to old style
-    old_reqs = [
-        txt,
-        CACHE_DIR / f"{name}_wordlength.json",
-        CACHE_DIR / f"{name}_partitions.json",
-    ]
-    return all(p.exists() for p in old_reqs)
+    return data.exists()
 
 
 def list_available_dictionaries() -> None:
