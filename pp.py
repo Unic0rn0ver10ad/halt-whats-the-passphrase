@@ -42,7 +42,7 @@ class passphrase:
         self.end_n = end_n
 
         self.wordlist_file = CACHE_DIR / f"{self.dictionary}_filtered.txt"
-        self.wordlength_file = CACHE_DIR / f"{self.dictionary}_wordlength.json"
+        self.data_file = CACHE_DIR / f"{self.dictionary}_data.json"
 
         if not dictionary_exists(self.dictionary):
             print(f"[ERROR] Required dictionary files for '{self.dictionary}' not found.")
@@ -59,37 +59,44 @@ class passphrase:
             print(f"Got wordlist: {self.wordlist_file}")
             print(f"  {self.wordlist_length} words in {self.wordlist_file}")
 
-        # WORDLENGTH DICT
-        self.wordlength_dict = jr(self.wordlength_file.name)
-        self.min_word_length = min(self.wordlength_dict)
-        self.max_word_length = max(self.wordlength_dict)
+        # LOAD DICTIONARY DATA
+        data = jr(self.data_file.name, convert_keys=False)
+        self.metadata = data.get("metadata", {}) if isinstance(data, dict) else {}
+        wl = data.get("wordlengths", {}) if isinstance(data, dict) else {}
+        self.wordlength_dict = {int(k): v for k, v in wl.items()}
+        self.min_word_length = self.metadata.get("min_word_length", min(self.wordlength_dict))
+        self.max_word_length = self.metadata.get("max_word_length", max(self.wordlength_dict))
         if self.verbose:
-            print(f"Imported wordlength dictionary: {self.wordlength_file}")
+            print(f"Imported dictionary data: {self.data_file}")
             # 1. Pull out the keys and convert to int
-            keys = list(map(int, self.wordlength_dict.keys()))
+            keys = sorted(self.wordlength_dict.keys())
 
             # 2. Sort them
             keys.sort()
 
             # 3. Join into a comma-separated string
             out = ", ".join(str(k) for k in keys)
-            print(f"  Possible word lengths found from {len(self.wordlength_dict)} : {out}")
+            print(
+                f"  Possible word lengths found from {len(self.wordlength_dict)} : {out}"
+            )
 
         # START/END RANGES AND PARTITION FILE
         self.start_n = self.start_n if self.start_n is not None else self.min_word_length * 2
         self.end_n = self.end_n if self.end_n is not None else self.max_word_length * 5
-        if start_n is None and end_n is None:
-            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions.json"
-        else:
-            self.partitions_file = CACHE_DIR / f"{self.dictionary}_partitions_{self.start_n}_{self.end_n}.json"
-
         # PARTITIONS DICT
-        self.partitions_dict = jr(self.partitions_file.name)
-        if self.verbose:
-            print(f"Imported partitions dictionary from: {self.partitions_file}")
-            print(f"  Possible partition keys found: {len(self.partitions_dict)}")
-            keys = list(map(int, self.partitions_dict.keys()))
-            print(f"  Available partition keys: {keys}")
+        self.partitions_dict = {}
+        if self.metadata.get("has_partitions"):
+            p = data.get("partitions", {})
+            self.partitions_dict = {int(k): v for k, v in p.items()}
+            if self.verbose:
+                print(
+                    "Imported partitions dictionary from embedded data"
+                )
+                print(
+                    f"  Possible partition keys found: {len(self.partitions_dict)}"
+                )
+                keys = list(sorted(int(k) for k in self.partitions_dict.keys()))
+                print(f"  Available partition keys: {keys}")
         
         # COLOR and ENTROPY OBJECTS
         self.c = color.Color()
@@ -126,7 +133,10 @@ class passphrase:
                 frame = [w.capitalize() for w in self.get_random_words_from_list(self.num_words)]
             else:
                 # FIXED NUMBER OF CHARACTERS
-                partitions = self.partitions_dict[self.num_chars]
+                partitions = self.partitions_dict.get(self.num_chars)
+                if partitions is None:
+                    print(f"No partitions available for length {self.num_chars}.")
+                    exit(1)
                 rand_part = self._crypto.choice(partitions)
                 self._crypto.shuffle(rand_part)
 

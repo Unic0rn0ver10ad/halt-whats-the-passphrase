@@ -72,21 +72,37 @@ def json_read(filename: str, convert_keys: bool = True) -> Union[dict, list, boo
 # --------------------------
 # Partition Generation
 # --------------------------
-def create_partitions(partition_path: Path, start_n: int = 10, end_n: int = 50, min_val: int = 4, max_val: int = 9) -> None:
+def create_partitions(partition_path: Path | None = None,
+                      start_n: int = 10,
+                      end_n: int = 50,
+                      min_val: int = 4,
+                      max_val: int = 9) -> Dict[int, List[List[int]]]:
+    """Generate partitions and optionally write them to ``partition_path``."""
     start_time = time.time()
-    partitions_dict = {}
+    partitions_dict: Dict[int, List[List[int]]] = {}
 
     for n in range(start_n, end_n + 1):
         partition_start_time = time.time()
         partitions = generate_partitions_for_n(n, min_val, max_val)
         time_taken = time.time() - partition_start_time
 
-        print(f"N = {n}, Total Partitions = {len(partitions)}, Time taken = {time_taken:.2f} seconds")
+        print(
+            f"N = {n}, Total Partitions = {len(partitions)}, "
+            f"Time taken = {time_taken:.2f} seconds"
+        )
         partitions_dict[n] = partitions
 
     total_time = time.time() - start_time
-    json_write(partition_path, partitions_dict)
-    print(f"Partition generation completed. Time: {total_time:.2f} seconds. Results written to {partition_path}.")
+    if partition_path is not None:
+        json_write(partition_path, partitions_dict)
+        print(
+            "Partition generation completed. Time: "
+            f"{total_time:.2f} seconds. Results written to {partition_path}."
+        )
+    else:
+        print(f"Partition generation completed. Time: {total_time:.2f} seconds.")
+
+    return partitions_dict
 
 @lru_cache(maxsize=None)
 def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[int]]:
@@ -108,8 +124,11 @@ def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[i
 # --------------------------
 # Dictionary Utilities
 # --------------------------
-def process_all_dictionaries(min_word_length: int = 4, max_word_length: int = 9,
-                             start_n: int | None = None, end_n: int | None = None) -> None:
+def process_all_dictionaries(min_word_length: int = 4,
+                             max_word_length: int = 9,
+                             start_n: int | None = None,
+                             end_n: int | None = None,
+                             language: str | None = None) -> None:
     """
     Process every dictionary file in the wordlists directory.
     Automatically detects whether the file is a dicelist based on the first line format.
@@ -133,7 +152,8 @@ def process_all_dictionaries(min_word_length: int = 4, max_word_length: int = 9,
                 max_word_length=max_word_length,
                 start_n=start_n,
                 end_n=end_n,
-                is_dicelist=is_dicelist
+                is_dicelist=is_dicelist,
+                language=language or dictionary_path.stem
             )
         except Exception as e:
             print(f"[ERROR] Failed to process {dictionary_path.name}: {e}")
@@ -143,10 +163,14 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                            max_word_length: int = 9,
                            start_n: int | None = None,
                            end_n: int | None = None,
-                           is_dicelist: bool = False) -> bool:
-    print(f'Processing {raw_dictionary_filename}')
+                           is_dicelist: bool = False,
+                           language: str | None = None,
+                           include_partitions: bool = True) -> bool:
+    """Process a raw dictionary into filtered wordlist and JSON data."""
+    print(f"Processing {raw_dictionary_filename}")
     try:
         stem = Path(raw_dictionary_filename).stem
+        lang_name = language or "Unknown"
 
         wordlist = (
             convert_dicelist_to_dictionary(raw_dictionary_filename)
@@ -157,26 +181,39 @@ def process_raw_dictionary(raw_dictionary_filename: str,
         wordlist = filter_word_list(wordlist, min_word_length, max_word_length)
 
         filtered_path = CACHE_DIR / f"{stem}_filtered.txt"
-        if not file_generic_write(filtered_path, '\n'.join(wordlist)):
+        if not file_generic_write(filtered_path, "\n".join(wordlist)):
             raise RuntimeError("Failed to save filtered wordlist.")
 
-        wordlength_dict_path = CACHE_DIR / f"{stem}_wordlength.json"
-        if not json_write(wordlength_dict_path, generate_wordlength_dict(wordlist)):
-            raise RuntimeError("Failed to write wordlength dictionary.")
+        wordlength_dict = generate_wordlength_dict(wordlist)
 
         sn = start_n if start_n is not None else min_word_length * 2
         en = end_n if end_n is not None else max_word_length * 5
-        if start_n is None and end_n is None:
-            partitions_path = CACHE_DIR / f"{stem}_partitions.json"
-        else:
-            partitions_path = CACHE_DIR / f"{stem}_partitions_{sn}_{en}.json"
-        create_partitions(
-            partition_path=partitions_path,
-            start_n=sn,
-            end_n=en,
-            min_val=min_word_length,
-            max_val=max_word_length
-        )
+
+        partitions_dict = {}
+        if include_partitions:
+            partitions_dict = create_partitions(
+                partition_path=None,
+                start_n=sn,
+                end_n=en,
+                min_val=min_word_length,
+                max_val=max_word_length,
+            )
+
+        data = {
+            "metadata": {
+                "language": lang_name,
+                "has_partitions": bool(partitions_dict),
+                "min_word_length": min_word_length,
+                "max_word_length": max_word_length,
+            },
+            "wordlengths": {str(k): v for k, v in wordlength_dict.items()},
+        }
+        if partitions_dict:
+            data["partitions"] = {str(k): v for k, v in partitions_dict.items()}
+
+        data_path = CACHE_DIR / f"{stem}_data.json"
+        if not json_write(data_path, data):
+            raise RuntimeError("Failed to write dictionary data.")
 
         print(f"Processing of {raw_dictionary_filename} completed successfully.")
         return True
@@ -247,6 +284,8 @@ def list_cached_dictionaries() -> List[str]:
         return []
     for path in CACHE_DIR.glob("*_filtered.txt"):
         names.add(path.stem.replace("_filtered", ""))
+    for path in CACHE_DIR.glob("*_data.json"):
+        names.add(path.stem.replace("_data", ""))
     for path in CACHE_DIR.glob("*_wordlength.json"):
         names.add(path.stem.replace("_wordlength", ""))
     return sorted(names)
@@ -254,12 +293,17 @@ def list_cached_dictionaries() -> List[str]:
 
 def dictionary_exists(name: str) -> bool:
     """Check if the cached dictionary ``name`` has all required files."""
-    reqs = [
-        CACHE_DIR / f"{name}_filtered.txt",
+    txt = CACHE_DIR / f"{name}_filtered.txt"
+    data = CACHE_DIR / f"{name}_data.json"
+    if txt.exists() and data.exists():
+        return True
+    # fall back to old style
+    old_reqs = [
+        txt,
         CACHE_DIR / f"{name}_wordlength.json",
         CACHE_DIR / f"{name}_partitions.json",
     ]
-    return all(p.exists() for p in reqs)
+    return all(p.exists() for p in old_reqs)
 
 
 def list_available_dictionaries() -> None:

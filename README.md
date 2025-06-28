@@ -157,6 +157,29 @@ You can also set word length bounds when generating partitions:
 python hwtp.py utils part -o partitions.json -minw 3 -maxw 8
 ```
 
+### Dictionary JSON Format
+
+Processed dictionaries are stored in `cache/` using a single JSON file:
+
+```json
+{
+  "metadata": {
+    "language": "English",
+    "has_partitions": true,
+    "min_word_length": 4,
+    "max_word_length": 9
+  },
+  "wordlengths": {
+    "4": ["haze", "iris"],
+    "5": ["brisk", "noble"]
+  },
+  "partitions": {
+    "8": [[4,4], [8]]
+  }
+}
+```
+The `partitions` section is optional and only included when available.
+
 ---
 
 ## 📦 Installation
