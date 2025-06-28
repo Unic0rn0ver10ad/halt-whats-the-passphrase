@@ -61,6 +61,7 @@ if __name__ == '__main__':
 
         if utils_type == 'part':
             output_file = cli.get_arg('output')
+            verbose = cli.get_arg('verbose')
             if output_file is None:
                 print("Output filename required for 'part' command.")
             else:
@@ -70,6 +71,7 @@ if __name__ == '__main__':
                     end_n=end_n if end_n is not None else max_word_length * 5,
                     min_val=min_word_length,
                     max_val=max_word_length,
+                    verbose=verbose,
                 )
 
         elif utils_type == 'process':

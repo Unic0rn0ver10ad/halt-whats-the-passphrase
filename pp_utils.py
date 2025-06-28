@@ -72,11 +72,14 @@ def json_read(filename: str, convert_keys: bool = True) -> Union[dict, list, boo
 # --------------------------
 # Partition Generation
 # --------------------------
-def create_partitions(partition_path: Path | None = None,
-                      start_n: int = 10,
-                      end_n: int = 50,
-                      min_val: int = 4,
-                      max_val: int = 9) -> Dict[int, List[List[int]]]:
+def create_partitions(
+    partition_path: Path | None = None,
+    start_n: int = 10,
+    end_n: int = 50,
+    min_val: int = 4,
+    max_val: int = 9,
+    verbose: bool = False,
+) -> Dict[int, List[List[int]]]:
     """Generate partitions and optionally write them to ``partition_path``."""
     start_time = time.time()
     partitions_dict: Dict[int, List[List[int]]] = {}
@@ -86,10 +89,11 @@ def create_partitions(partition_path: Path | None = None,
         partitions = generate_partitions_for_n(n, min_val, max_val)
         time_taken = time.time() - partition_start_time
 
-        print(
-            f"N = {n}, Total Partitions = {len(partitions)}, "
-            f"Time taken = {time_taken:.2f} seconds"
-        )
+        if verbose:
+            print(
+                f"N = {n}, Total Partitions = {len(partitions)}, "
+                f"Time taken = {time_taken:.2f} seconds"
+            )
         partitions_dict[n] = partitions
 
     total_time = time.time() - start_time
@@ -231,6 +235,7 @@ def process_raw_dictionary(raw_dictionary_filename: str,
                 end_n=en,
                 min_val=min_word_length,
                 max_val=max_word_length,
+                verbose=verbose,
             )
 
         data = {
