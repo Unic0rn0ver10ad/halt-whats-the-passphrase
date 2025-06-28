@@ -137,9 +137,18 @@ class passphrase:
                 frame = []
                 used = set()
                 for length in rand_part:
+                    try:
+                        candidates = self.wordlength_dict[length]
+                    except KeyError:
+                        print(
+                            f"[ERROR] Dictionary lacks words of length {length}."
+                        )
+                        exit(1)
                     word = self.get_random_word_of_length(length)
-                    while word in used:
+                    attempts = len(candidates)
+                    while word in used and attempts > 0:
                         word = self.get_random_word_of_length(length)
+                        attempts -= 1
                     used.add(word)
                     frame.append(word)
 
@@ -171,7 +180,10 @@ class passphrase:
         return result
 
     def get_random_word_of_length(self, length):
-        return safe_capitalize(self._crypto.choice(self.wordlength_dict[length]))
+        words = self.wordlength_dict.get(length)
+        if not words:
+            raise KeyError(length)
+        return safe_capitalize(self._crypto.choice(words))
 
     def colorize_passphrase(self, text):
         colored = ''
