@@ -4,12 +4,9 @@ Passphrase generator module.
 """
 
 # Standard library imports
-import os
 import re
-import random
 import secrets
 import requests
-import string
 from typing import List
 
 # Local application imports
@@ -21,10 +18,6 @@ from pp_utils import (
     print_cached_dictionaries,
     dictionary_exists,
 )
-
-def safe_capitalize(word: str) -> str:
-    """Capitalize first ASCII alphabetic character, if present."""
-    return (word[0].upper() + word[1:]) if word[:1].isalpha() and word[:1].isascii() else word
 
 class passphrase:
     def __init__(self, verbose: bool = False, colorize: bool = False,
@@ -184,7 +177,7 @@ class passphrase:
         words = self.wordlength_dict.get(length)
         if not words:
             raise KeyError(length)
-        return safe_capitalize(self._crypto.choice(words))
+        return self.safe_capitalize(self._crypto.choice(words))
 
     def colorize_passphrase(self, text):
         colored = ''
@@ -260,5 +253,9 @@ class passphrase:
             w = self._crypto.choice(pool)
             if w not in chosen:
                 chosen.add(w)
-                result.append(safe_capitalize(w))
+                result.append(self.safe_capitalize(w))
         return result
+
+    def safe_capitalize(self, word: str) -> str:
+        """Capitalize first ASCII alphabetic character, if present."""
+        return (word[0].upper() + word[1:]) if word[:1].isalpha() and word[:1].isascii() else word
