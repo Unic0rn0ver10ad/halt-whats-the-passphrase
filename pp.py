@@ -257,5 +257,5 @@ class passphrase:
         return result
 
     def safe_capitalize(self, word: str) -> str:
-        """Capitalize first ASCII alphabetic character, if present."""
+        """Capitalize first ASCII alphabetic character"""
         return (word[0].upper() + word[1:]) if word[:1].isalpha() and word[:1].isascii() else word
