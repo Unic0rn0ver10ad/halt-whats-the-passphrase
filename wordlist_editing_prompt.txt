@@ -1,0 +1,48 @@
+You are an expert at creating secure passphrase word lists.
+
+You will be given a dictionary file (one word per line, in a .txt file). Please analyze each word and filter out words that do NOT meet the following criteria. Then produce a new .txt file containing ONLY the words that are good passphrase words.
+
+### Criteria for a GOOD passphrase word:
+
+1. **Length:**  
+   - The word must be between 4 and 10 characters long (inclusive).
+
+2. **Common and familiar:**  
+   - Prefer words that are generally familiar to native speakers of the language (high word recognition). Exclude obscure, archaic, or rare words.
+
+3. **Concrete:**  
+   - Prefer words that refer to tangible, physical things (like “apple” or “table”) over very abstract concepts (like “truth” or “freedom”), though some abstract common words may still be acceptable.
+
+4. **Easy to spell and type:**  
+   - Exclude words that are unusually hard to spell or type.
+
+5. **No homophones:**  
+   - Avoid words that sound exactly like other words but are spelled differently (like “pair” vs “pear”) to reduce recall confusion.
+
+6. **No offensive, vulgar, or emotionally charged words:**  
+   - Remove profanity, slurs, strongly insulting or sensitive words.
+
+7. **No unusual proper names:**  
+   - Exclude person names, place names, or brand names that are uncommon.
+
+8. **No words with punctuation or numbers:**  
+   - Exclude words containing spaces, apostrophes, hyphens, periods, or digits (like "Panama Canal", “don’t”, “e-mail”, or “abc123”).
+
+9. **No very short (1–3 character) or overly long words:**  
+   - As above, enforce 4–10 character (inclusive) limit to improve memorability.
+
+10. **Prefix rule (optional advanced):**  
+    - Ideally, no word should be an exact prefix of another word in the list (to avoid ambiguity in partial matching). If feasible, enforce this.
+
+### Output:
+
+- Produce a new .txt file that contains only the words that passed all of these checks, one word per line.
+
+- Do not include any explanations or metadata in the file—just the list of clean passphrase words.
+
+### Notes:
+
+- If needed, use common word frequency lists for the target language to judge familiarity.
+- You may assume the input file contains real words in the target language, one per line.
+
+Please read the attached dictionary file and return a new .txt file containing only the words suitable for passphrase use according to these guidelines. When you are done, please give a few examples of words you rejected, and why.
