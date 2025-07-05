@@ -6,6 +6,7 @@ Passphrase utilities.
 # Standard library imports
 import time
 import json
+import secrets
 from pathlib import Path
 from functools import lru_cache
 from collections import defaultdict
@@ -22,14 +23,6 @@ CACHE_DIR = BASE_DIR / 'cache'
 # --------------- #
 # File Utilities  #
 # --------------- #
-# def file_generic_read(path_to_file: Path) -> Union[str, bool]:
-#     try:
-#         with path_to_file.open("r", encoding="utf-8") as my_file:
-#             return my_file.read()
-#     except Exception as error:
-#         print(f"Couldn't read file: {path_to_file} Error: {error}")
-#         return False
-
 def file_generic_write(path_to_file: Path, data_to_save: str) -> bool:
     try:
         with path_to_file.open("w", encoding="utf-8") as my_file:
@@ -73,7 +66,7 @@ def json_read(filename: str, convert_keys: bool = True) -> Union[dict, list, boo
 # Partition Generation #
 # ---------------------#
 
-# Brute Force Method
+# Brute Force Partition Creation Method
 def create_partitions(
     partition_path: Path | None = None,
     start_n: int = 10,
@@ -126,6 +119,63 @@ def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[i
                 partitions.add(tuple(sorted((i,) + tuple(sub_partition))))
 
     return [list(partition) for partition in partitions]
+
+# Just-In-Time Partition Creation Method
+def secure_shuffle(lst: List[int]) -> None:
+    """
+    Perform an in-place Fisher-Yates shuffle using secrets.randbelow for maximum cryptographic security goodness.
+
+    :param lst: List of integers to shuffle in place.
+    """
+    for i in range(len(lst) - 1, 0, -1):
+        j = secrets.randbelow(i + 1)
+        lst[i], lst[j] = lst[j], lst[i]
+
+def create_jit_partition(n: int, minw: int, maxw: int) -> List[int]:
+    """
+    Generate one random integer partition of `n` into parts between minw and maxw (inclusive),
+    using a dynamic valid-picks approach with the secrets module for secure randomness.
+    The result is shuffled for extra entropy.
+
+    :param n: Total sum to partition.
+    :param minw: Minimum allowed part size.
+    :param maxw: Maximum allowed part size.
+    :return: A list of integers summing to n, each in [minw, maxw].
+    :raises ValueError: If bounds are invalid or if no partition is possible.
+    """
+    if minw > maxw:
+        raise ValueError(f"Invalid bounds: minw ({minw}) > maxw ({maxw})")
+    if n < minw:
+        raise ValueError(f"No partition possible: n ({n}) < minw ({minw})")
+
+    R = n
+    parts: List[int] = []
+
+    # Continue until the remainder R is zero
+    while R > 0:
+        # Compute the count of picks in [minw..max_pick]
+        max_pick = min(maxw, R - minw)
+        picks_count = max_pick - minw + 1 if max_pick >= minw else 0
+        # Allow finishing with R itself if R <= maxw
+        allow_finish = 1 if R <= maxw else 0
+        total_options = picks_count + allow_finish
+
+        if total_options <= 0:
+            raise ValueError(f"No valid picks for R={R} with minw={minw}, maxw={maxw}")
+
+        # Select a random index among all valid options
+        idx = secrets.randbelow(total_options)
+        if idx < picks_count:
+            w = minw + idx
+        else:
+            w = R
+
+        parts.append(w)
+        R -= w
+
+    # Shuffle for extra entropy
+    secure_shuffle(parts)
+    return parts
 
 # -------------------- #
 # Dictionary Utilities #
@@ -210,21 +260,28 @@ def process_dictionary(raw_dictionary_filename: str,
             if is_dicelist else
             generate_wordlist_from_dictionary(raw_dictionary_filename)
         )
-        original_length = len(wordlist) if wordlist else 0
-        wordlist = filter_word_list(
+        if not isinstance(wordlist, list):
+            print(f"[ERROR] Failed to load wordlist from {raw_dictionary_filename}")
+            return False
+        original_length = len(wordlist)
+        filtered_wordlist = filter_word_list(
             wordlist,
             min_word_length,
             max_word_length,
             verbose=verbose,
         )
-        rejected_count = original_length - len(wordlist) if wordlist else original_length
+        if not isinstance(filtered_wordlist, list):
+            print(f"[ERROR] Failed to filter wordlist from {raw_dictionary_filename}")
+            return False
+        rejected_count = original_length - len(filtered_wordlist)
         if verbose:
             print(
             f"Rejected {rejected_count} words from Wordlist {raw_dictionary_filename}"
             )
-        if not wordlist:
+        if not filtered_wordlist:
             print(f"No valid words found in {raw_dictionary_filename}")
             return False
+        wordlist = filtered_wordlist
 
         wordlength_dict = generate_wordlength_dict(wordlist)
 
