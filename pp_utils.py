@@ -65,7 +65,6 @@ def json_read(filename: str, convert_keys: bool = True) -> Union[dict, list, boo
 # ---------------------#
 # Partition Generation #
 # ---------------------#
-
 # Brute Force Partition Creation Method
 def create_partitions(
     partition_path: Path | None = None,

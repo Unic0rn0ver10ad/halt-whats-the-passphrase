@@ -1,0 +1,3 @@
+*Just-in-Time Partitions*
+[ ] Create an EFF data file with no partitions
+[ ] Test using that partitionless data file with the pp module
