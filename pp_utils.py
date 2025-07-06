@@ -120,16 +120,6 @@ def generate_partitions_for_n(n: int, min_val: int, max_val: int) -> List[List[i
     return [list(partition) for partition in partitions]
 
 # Just-In-Time Partition Creation Method
-def secure_shuffle(lst: List[int]) -> None:
-    """
-    Perform an in-place Fisher-Yates shuffle using secrets.randbelow for maximum cryptographic security goodness.
-
-    :param lst: List of integers to shuffle in place.
-    """
-    for i in range(len(lst) - 1, 0, -1):
-        j = secrets.randbelow(i + 1)
-        lst[i], lst[j] = lst[j], lst[i]
-
 def create_jit_partition(n: int, minw: int, maxw: int) -> List[int]:
     """
     Generate one random integer partition of `n` into parts between minw and maxw (inclusive),
@@ -175,6 +165,16 @@ def create_jit_partition(n: int, minw: int, maxw: int) -> List[int]:
     # Shuffle for extra entropy
     secure_shuffle(parts)
     return parts
+
+def secure_shuffle(lst: List[int]) -> None:
+    """
+    Perform an in-place Fisher-Yates shuffle using secrets.randbelow for maximum cryptographic security goodness.
+
+    :param lst: List of integers to shuffle in place.
+    """
+    for i in range(len(lst) - 1, 0, -1):
+        j = secrets.randbelow(i + 1)
+        lst[i], lst[j] = lst[j], lst[i]
 
 # -------------------- #
 # Dictionary Utilities #
