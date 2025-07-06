@@ -182,6 +182,14 @@ You can also set word length bounds when generating partitions:
 ```bash
 python hwtp.py utils part -o partitions.json -minw 3 -maxw 8
 ```
+Generate a partition on the fly:
+```bash
+python hwtp.py utils jit -n 20 -minw 4 -maxw 9
+```
+Save it to a file instead of printing:
+```bash
+python hwtp.py utils jit -n 20 -minw 4 -maxw 9 -save partition.txt
+```
 
 ### Dictionary JSON Format
 

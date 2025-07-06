@@ -118,6 +118,17 @@ class CLI:
                       action='store_true',
                       help='Print verbose output (show partition details)')
 
+    # jit: on-demand partition generation
+    jit = utils_subparsers.add_parser('jit', help='Generate a single partition')
+    jit.add_argument('-n', type=int, required=True,
+                     help='Value to partition')
+    jit.add_argument('-minw', '--min-word-length', type=int, default=4,
+                     help='Minimum word length (default: 4)')
+    jit.add_argument('-maxw', '--max-word-length', type=int, default=9,
+                     help='Maximum word length (default: 9)')
+    jit.add_argument('-save', '--save-as', type=str,
+                     help='Filename to save the partition (overwrites if exists)')
+
     # Add arguments to the pwnage subparser
     pwn_parser.add_argument('password')
 

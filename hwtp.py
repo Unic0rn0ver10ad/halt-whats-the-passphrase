@@ -36,23 +36,6 @@ if __name__ == '__main__':
         part_choice = cli.get_arg('partitions')
         include_partitions = False if str(part_choice).lower() == 'false' else True
 
-        if include_partitions:
-            if start_n is None or end_n is None:
-                print("Both --start-n and --end-n must be specified when -p true.")
-                exit(1)
-            if not isinstance(start_n, int) or not isinstance(end_n, int):
-                print("--start-n and --end-n must be integers.")
-                exit(1)
-            if start_n < 1:
-                print("--start-n must be 1 or greater.")
-                exit(1)
-            if start_n >= end_n:
-                print("--start-n must be less than --end-n.")
-                exit(1)
-            if end_n > 50:
-                print("--end-n cannot be greater than 50.")
-                exit(1)
-
         if utils_type == 'part':
             output_file = cli.get_arg('output')
             verbose = cli.get_arg('verbose')
@@ -68,11 +51,45 @@ if __name__ == '__main__':
                     verbose=verbose,
                 )
 
+        elif utils_type == 'jit':
+            n_val = cli.get_arg('n')
+            save_as = cli.get_arg('save_as')
+            try:
+                parts = pp_utils.create_jit_partition(
+                    n_val,
+                    min_word_length,
+                    max_word_length,
+                )
+                if save_as:
+                    path = Path(save_as)
+                    pp_utils.file_generic_write(path, ' '.join(map(str, parts)))
+                    print(f"Partition saved to {path}")
+                else:
+                    print(parts)
+            except Exception as e:
+                print(f"[ERROR] {e}")
+
         elif utils_type == 'process':
             dict_raw_filename = cli.get_arg('dictionary')
             lang_name = cli.get_arg('name')
             verbose = cli.get_arg('verbose')
             min_chars = cli.get_arg('min_chars')
+            if include_partitions:
+                if start_n is None or end_n is None:
+                    print("Both --start-n and --end-n must be specified when -p true.")
+                    exit(1)
+                if not isinstance(start_n, int) or not isinstance(end_n, int):
+                    print("--start-n and --end-n must be integers.")
+                    exit(1)
+                if start_n < 1:
+                    print("--start-n must be 1 or greater.")
+                    exit(1)
+                if start_n >= end_n:
+                    print("--start-n must be less than --end-n.")
+                    exit(1)
+                if end_n > 50:
+                    print("--end-n cannot be greater than 50.")
+                    exit(1)
             if dict_raw_filename is None:
                 print("Dictionary filename required for 'process' command.")
             else:
@@ -92,6 +109,22 @@ if __name__ == '__main__':
             lang_name = cli.get_arg('name')
             verbose = cli.get_arg('verbose')
             min_chars = cli.get_arg('min_chars')
+            if include_partitions:
+                if start_n is None or end_n is None:
+                    print("Both --start-n and --end-n must be specified when -p true.")
+                    exit(1)
+                if not isinstance(start_n, int) or not isinstance(end_n, int):
+                    print("--start-n and --end-n must be integers.")
+                    exit(1)
+                if start_n < 1:
+                    print("--start-n must be 1 or greater.")
+                    exit(1)
+                if start_n >= end_n:
+                    print("--start-n must be less than --end-n.")
+                    exit(1)
+                if end_n > 50:
+                    print("--end-n cannot be greater than 50.")
+                    exit(1)
             pp_utils.process_all_dictionaries(
                 min_word_length=min_word_length,
                 max_word_length=max_word_length,
