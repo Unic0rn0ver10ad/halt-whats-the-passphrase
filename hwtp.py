@@ -136,7 +136,7 @@ if __name__ == '__main__':
                 dictionary = Path(dictionary).stem
         start_n = cli.get_arg('start_n')
         end_n = cli.get_arg('end_n')
-        pp = pp.passphrase(
+        pp_gen = pp.passphrase(
             verbose=verbose,
             colorize=color,
             dictionary=dictionary,
@@ -181,14 +181,14 @@ if __name__ == '__main__':
             print(consec_str)
 
         if wiki is True:
-            return_list = pp.generate_passphrase_wikipedia(
+            return_list = pp_gen.generate_passphrase_wikipedia(
                 num_reps=num_reps,
                 colorize=color,
                 augenbaumize=augenbaumize,
                 num_titles=3,
                 verbose=verbose)
         else:
-            return_list = pp.get_passphrase(num_chars=num_chars,
+            return_list = pp_gen.get_passphrase(num_chars=num_chars,
                                             num_reps=num_reps,
                                             num_words=num_words,
                                             verbose=verbose,
