@@ -62,8 +62,11 @@ if __name__ == '__main__':
                 )
                 if save_as:
                     path = Path(save_as)
-                    pp_utils.file_generic_write(path, ' '.join(map(str, parts)))
+                    # pp_utils.file_generic_write(path, ' '.join(map(str, parts)))
+                    jit_array_str = str(parts)
+                    pp_utils.file_generic_write(path, jit_array_str)
                     print(f"Partition saved to {path}")
+                    print(jit_array_str)
                 else:
                     print(parts)
             except Exception as e:
