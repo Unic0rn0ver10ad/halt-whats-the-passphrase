@@ -17,6 +17,7 @@ from pp_utils import (
     json_read as jr,  # JSON Read
     print_cached_dictionaries,
     dictionary_exists,
+    create_jit_partition,
 )
 
 class passphrase:
@@ -123,10 +124,21 @@ class passphrase:
                 # FIXED NUMBER OF CHARACTERS
                 partitions = self.partitions_dict.get(self.num_chars)
                 if partitions is None:
-                    print(f"No partitions available for length {self.num_chars}.")
-                    exit(1)
-                rand_part = self._crypto.choice(partitions)
-                self._crypto.shuffle(rand_part)
+                    if self.metadata.get("has_partitions"):
+                        print(f"No partitions available for length {self.num_chars}.")
+                        exit(1)
+                    try:
+                        rand_part = create_jit_partition(
+                            self.num_chars,
+                            self.min_word_length,
+                            self.max_word_length,
+                        )
+                    except ValueError as e:
+                        print(f"[ERROR] {e}")
+                        exit(1)
+                else:
+                    rand_part = self._crypto.choice(partitions)
+                    self._crypto.shuffle(rand_part)
 
                 frame = []
                 used = set()
