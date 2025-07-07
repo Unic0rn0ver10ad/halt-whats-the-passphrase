@@ -7,13 +7,13 @@ import argparse
 
 
 class CLI:
-  def __init__(self):
-    self.arg_parser = None
-    self.args = None
-    self.cli()
+    def __init__(self):
+        self.arg_parser: argparse.ArgumentParser | None = None
+        self.args: argparse.Namespace
+        self.cli()
 
-  def get_arg(self, arg):
-    return self.args.get(arg)  # .get() method returns None if the key doesn't exist, avoiding KeyError
+    def get_arg(self, arg: str):
+        return getattr(self.args, arg, None)
 
   def cli(self):
     # Create the parser
@@ -244,4 +244,4 @@ class CLI:
                            help='Enter the string you wish to include in the passphrase, followed by 1, 2, or 3. 1 = pad at beginning, 2 = pad in the middle, 3 = pad at the end. Example: -pad m0nk3y! 1 will produce passphrase: "m0nk3y!PPPPPPPP". -pad m0nk3y! 2 will produce passphrase: "PPPPm0nk3y!PPPP". -pad m0nk3y! 3 will produce passphrase: "PPPPPPPPm0nk3y!".')
 
     # Get arguments from the command line
-    self.args = vars(self.arg_parser.parse_args())
+    self.args = self.arg_parser.parse_args()
