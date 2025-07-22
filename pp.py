@@ -125,8 +125,9 @@ class passphrase:
                 partitions = self.partitions_dict.get(self.num_chars)
                 if partitions is None:
                     if self.metadata.get("has_partitions"):
-                        print(f"No partitions available for length {self.num_chars}.")
-                        exit(1)
+                        print(
+                            f"No stored partitions for length {self.num_chars}; falling back to JIT."
+                        )
                     try:
                         rand_part = create_jit_partition(
                             self.num_chars,

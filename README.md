@@ -213,7 +213,9 @@ Processed dictionaries are stored in `cache/` using a single JSON file:
   }
 }
 ```
-The `partitions` section is optional and only included when available.
+The `partitions` section is optional and only included when available. When a
+dictionary lacks partition data, the CLI automatically generates a valid
+partition on the fly using secure randomness ("just‑in‑time" partitioning).
 
 ---
 
