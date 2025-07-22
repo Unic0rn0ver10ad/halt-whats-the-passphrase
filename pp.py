@@ -57,16 +57,11 @@ class passphrase:
         self.min_chars = self.metadata.get("min_chars", 10)
         if self.verbose:
             print(f"Imported dictionary data: {self.data_file}")
-            # 1. Pull out the keys and convert to int
             keys = sorted(self.wordlength_dict.keys())
-
-            # 2. Sort them
             keys.sort()
-
-            # 3. Join into a comma-separated string
             out = ", ".join(str(k) for k in keys)
             print(
-                f"  Possible word lengths found from {len(self.wordlength_dict)} : {out}"
+                f"  {len(self.wordlength_dict)} possible word lengths found  : {out}"
             )
 
         # START/END RANGES AND PARTITION FILE
@@ -124,15 +119,11 @@ class passphrase:
                 # FIXED NUMBER OF CHARACTERS
                 partitions = self.partitions_dict.get(self.num_chars)
                 if partitions is None:
-                    if self.metadata.get("has_partitions"):
-                        print(
-                            f"No stored partitions for length {self.num_chars}; falling back to JIT."
-                        )
                     try:
                         rand_part = create_jit_partition(
-                            self.num_chars,
-                            self.min_word_length,
-                            self.max_word_length,
+                        self.num_chars,
+                        self.min_word_length,
+                        self.max_word_length,
                         )
                     except ValueError as e:
                         print(f"[ERROR] {e}")
