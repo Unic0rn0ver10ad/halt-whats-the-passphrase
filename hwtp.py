@@ -9,6 +9,7 @@ import pw  # password generator
 import hibp  # check passwords for known breached
 import pp_utils  # passphrase utilities
 from pathlib import Path
+import sys
 
 if __name__ == '__main__':
     # CLI object
@@ -22,6 +23,10 @@ if __name__ == '__main__':
     # which module are we running?
     ptype = cli.get_arg('subparser_name')
     if ptype is None:
+        if len(sys.argv) == 1:
+            mascot_path = Path('hwtp.txt')
+            if mascot_path.is_file():
+                print(mascot_path.read_text())
         print(
             "Select 'pp' for passphrase, 'pw' for password, 'pwn' for password pwnage check, or 'utils' for passphrase utilities.'"
         )
