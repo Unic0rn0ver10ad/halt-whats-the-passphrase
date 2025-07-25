@@ -24,7 +24,7 @@ if __name__ == '__main__':
     ptype = cli.get_arg('subparser_name')
     if ptype is None:
         if len(sys.argv) == 1:
-            mascot_path = Path('hwtp_color.txt')
+            mascot_path = Path('hwtp_color_basic.txt')
             if mascot_path.is_file():
                 print(mascot_path.read_text())
         print(
