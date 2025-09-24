@@ -120,7 +120,7 @@ Only use specific special characters to build a password:
 python hwtp.py pw -co -n 10 -no u l d -so '@ # $ ='
 ```
 
-### Dictionary Utilities
+## 📖 Dictionary Utilities
 
 List cached wordlists (numbered for easy selection):
 ```bash
