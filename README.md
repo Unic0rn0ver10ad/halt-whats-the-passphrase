@@ -1,4 +1,4 @@
-# 🛑 Halt! What's the Passphrase?
+# 🛑Halt! What's the Passphrase?🤔
 
 <img src="hwtp.png" alt="Halt! What's the Passphrase?" width="300">
 
@@ -8,10 +8,9 @@
 
 ## 🚀 Features
 
-- Generate memorable passphrases or secure passwords
-- Rich CLI options for customization
-- Optional integration with [Have I Been Pwned](https://haveibeenpwned.com/) to check for compromised passwords
-- Fun, nerdy, and secure
+- Generate memorable passphrases of exactly the length you choose
+- Rich CLI feature set
+- Integration with free [Have I Been Pwned](https://haveibeenpwned.com/) API to check for compromise
 - Quickly view cached wordlists with `-lw` (lists are numbered)
 - Choose which cached dictionary to use with `-d` (accepts a number or name)
 
@@ -27,16 +26,6 @@ python hwtp.py pp
 Generate 20 colorized passphrases:
 ```bash
 python hwtp.py pp -co -n 20
-```
-
-Smush 5 words together per passphrase:
-```bash
-python hwtp.py pp -co -n 20 -nw 5
-```
-
-Use the Augenbaum method with parameter `5@`:
-```bash
-python hwtp.py pp -co -n 20 -au 5@
 ```
 
 Generate 32-character passphrases:
@@ -56,14 +45,19 @@ Pad the passphrase with a custom string:
 python hwtp.py pp -co -pad m0nk3y! 3
 ```
 
+Smush 5 words together per passphrase:
+```bash
+python hwtp.py pp -co -n 20 -nw 5
+```
+
+Use the Augenbaum method with parameter `5@`:
+```bash
+python hwtp.py pp -co -n 20 -au 5@
+```
+
 Customize the partition range (advanced):
 ```bash
 python hwtp.py pp --start-n 8 --end-n 40
-```
-
-Display help:
-```bash
-python hwtp.py pp -h
 ```
 
 Use Wikipedia as a source with verbose output:
@@ -76,12 +70,12 @@ Wikipedia + multiple passphrases:
 python hwtp.py pp -co -w -n 10
 ```
 
-Check a passphrase against breaches:
+Check a passphrase against breaches (HaveIBeenPwned.com free API):
 ```bash
 python hwtp.py pp -co -pwn
 ```
 
-Check a specific password:
+Check a specific password (HaveIBeenPwned.com free API):
 ```bash
 python hwtp.py pwn f00tl00se
 ```
@@ -95,7 +89,7 @@ Colorized, 20 passwords with lots of filters:
 python hwtp.py pw -co -nc -n 20 -no l u s -v
 ```
 
-10-character passwords, tightly controlled:
+10-character passwords, no consecutive characters:
 ```bash
 python hwtp.py pw -co -nc -n 20 -c 10 -v -no l -md 4 -ms 4 -a -x -b
 ```
@@ -105,7 +99,7 @@ Bookended, balanced, and secure:
 python hwtp.py pw -co -nc -ms 3 -md 3 -b -n 20 -c 8 -v
 ```
 
-Check generated passwords against known breaches:
+Check a generated password against known breaches:
 ```bash
 python hwtp.py pw -co -pwn
 ```
@@ -120,7 +114,7 @@ Limit character sets with exclusions:
 python hwtp.py pw -co -n 10 -no u l d -sd '@ # $ _ & ( ) / : ; ! ? - ='
 ```
 
-Or whitelist specific special characters:
+Only use specific special characters:
 ```bash
 python hwtp.py pw -co -n 10 -no u l d -so '@ # $ ='
 ```
@@ -241,16 +235,16 @@ Or simply use the Python file directly if dependencies are already met.
 
 ## 🧠 License
 
-MIT License – do with it what you will, and may your passphrases not end up in HaveIBeenPwned 💪
+[Unlicense](https://unlicense.org/) – do with it what you will, and may your passphrases not end up in HaveIBeenPwned 💪
 
 ---
 
 ## 🙌 Contributions Welcome!
 
-Feel free to fork, PR, or raise issues!
+Unless you're a 🤖
 
 ---
 
 ## 📫 Contact
 
-[Your GitHub Profile or Email]
+https://github.com/Unic0rn0ver10ad
