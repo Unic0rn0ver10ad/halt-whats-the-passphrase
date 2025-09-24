@@ -66,11 +66,6 @@ Use the [Augenbaum](https://cybersecuremindset.com/) method with parameter `8@`:
 python hwtp.py pp -co -n 20 -au 8@
 ```
 
-Customize the partition range (advanced):
-```bash
-python hwtp.py pp --start-n 8 --end-n 40
-```
-
 Use random Wikipedia article titles (using their free API) as a source with verbose output:
 ```bash
 python hwtp.py pp -co -w -v
