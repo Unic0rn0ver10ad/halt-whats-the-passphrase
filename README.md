@@ -23,36 +23,44 @@ Generate a single passphrase:
 python hwtp.py pp
 ```
 
-Generate 20 colorized passphrases:
+Generate 20x colorized passphrases:
 ```bash
 python hwtp.py pp -co -n 20
 ```
 
-Generate 32-character passphrases:
+Generate 20x 32-character passphrases:
 ```bash
 python hwtp.py pp -co -n 20 -c 32
 ```
 
-Use a specific cached dictionary by name or number:
+See all available cached dictionaries:
 ```bash
-python hwtp.py pp -d eff_short_wordlist
-# or
-python hwtp.py pp -d 3
+python hwtp.py -lw
 ```
 
-Pad the passphrase with a custom string:
+Use a specific cached dictionary by name:
 ```bash
-python hwtp.py pp -co -pad m0nk3y! 3
+python hwtp.py pp -d japanese
 ```
 
-Smush 5 words together per passphrase:
+Use a specific cached dictionary by number:
+```bash
+python hwtp.py pp -d 15
+```
+
+Pad the passphrase with a custom string in the middle (on a word boundary):
+```bash
+python hwtp.py pp -co -pad HWTP! 2
+```
+
+Smush 5 words together per passphrase (random lengths):
 ```bash
 python hwtp.py pp -co -n 20 -nw 5
 ```
 
-Use the Augenbaum method with parameter `5@`:
+Use the [Augenbaum](https://cybersecuremindset.com/) method with parameter `8@`:
 ```bash
-python hwtp.py pp -co -n 20 -au 5@
+python hwtp.py pp -co -n 20 -au 8@
 ```
 
 Customize the partition range (advanced):
@@ -60,46 +68,41 @@ Customize the partition range (advanced):
 python hwtp.py pp --start-n 8 --end-n 40
 ```
 
-Use Wikipedia as a source with verbose output:
+Use random Wikipedia article titles (using their free API) as a source with verbose output:
 ```bash
 python hwtp.py pp -co -w -v
 ```
 
-Wikipedia + multiple passphrases:
+Generate multiple Wikipedia passphrases:
 ```bash
 python hwtp.py pp -co -w -n 10
 ```
 
-Check a passphrase against breaches (HaveIBeenPwned.com free API):
+Check a single randomly generated passphrase against known breaches using the HaveIBeenPwned.com free API:
 ```bash
 python hwtp.py pp -co -pwn
 ```
 
 Check a specific password (HaveIBeenPwned.com free API):
 ```bash
-python hwtp.py pwn f00tl00se
+python hwtp.py pwn pokemon1
 ```
 
 ---
 
 ## 🔐 Fun With Passwords
 
-Colorized, 20 passwords with lots of filters:
+Colorized, 20 passwords using only numbers and no consecutive characters allowed:
 ```bash
 python hwtp.py pw -co -nc -n 20 -no l u s -v
 ```
 
-10-character passwords, no consecutive characters:
+Generate 20x 10-character password(s) each with a minimum of 4 digits and 4 special characters, with no ambiguous characters (l, I, 1, 0, O), that does not use any lowercase letters, with no consecutive duplicate characters allowed, that is bookended (no numbers or specials as the first or last character).
 ```bash
 python hwtp.py pw -co -nc -n 20 -c 10 -v -no l -md 4 -ms 4 -a -x -b
 ```
 
-Bookended, balanced, and secure:
-```bash
-python hwtp.py pw -co -nc -ms 3 -md 3 -b -n 20 -c 8 -v
-```
-
-Check a generated password against known breaches:
+Check a randomly generated password against known breaches:
 ```bash
 python hwtp.py pw -co -pwn
 ```
@@ -109,12 +112,12 @@ python hwtp.py pw -co -pwn
 python hwtp.py pw -co -nc -ms 4 -md 4 -b -n 20 -c 8 -v
 ```
 
-Limit character sets with exclusions:
+Generate a password using only special characters, and excluding some of those allowed:
 ```bash
 python hwtp.py pw -co -n 10 -no u l d -sd '@ # $ _ & ( ) / : ; ! ? - ='
 ```
 
-Only use specific special characters:
+Only use specific special characters to build a password:
 ```bash
 python hwtp.py pw -co -n 10 -no u l d -so '@ # $ ='
 ```
@@ -126,63 +129,39 @@ List cached wordlists (numbered for easy selection):
 python hwtp.py -lw
 ```
 
-Process a single dictionary with a custom partition range:
+Process a single dictionary with a custom partition range and minimum/maximum word length values, and show rejected words during processing:
 ```bash
-python hwtp.py utils process -d mywords.txt --name Swedish --start-n 8 --end-n 40
+python hwtp.py utils process -d swedish.txt --name Swedish --start-n 8 --end-n 40 --min-chars 8 -minw 3 -maxw 8 -v
 ```
-Set the minimum passphrase length stored in metadata:
+
+Skip partition generation (HWTP will use just-in-time partitition algorithm when using this wordlist):
 ```bash
-python hwtp.py utils process -d mywords.txt --name Swedish --min-chars 10
-```
-Skip partition generation:
-```bash
-python hwtp.py utils process -d mywords.txt --name Swedish -p false
-```
-Adjust minimum and maximum word lengths:
-```bash
-python hwtp.py utils process -d mywords.txt --name Swedish -minw 3 -maxw 8
-```
-Show rejected words during processing:
-```bash
-python hwtp.py utils process -d mywords.txt -v
+python hwtp.py utils process -d swedish.txt --name Swedish -p false --min-chars 8
 ```
 
 Process all dictionaries in `wordlists/`:
 ```bash
-python hwtp.py utils process-all --start-n 8 --end-n 40
+python hwtp.py utils process-all --start-n 8 --end-n 40 --min-chars 8
 ```
-Set a minimum length for all processed dictionaries:
-```bash
-python hwtp.py utils process-all --start-n 8 --end-n 40 --min-chars 10
-```
-Skip partitions for all dictionaries:
+
+Skip partition generation for all dictionaries:
 ```bash
 python hwtp.py utils process-all -p false
-```
-With custom word lengths for every dictionary:
-```bash
-python hwtp.py utils process-all -minw 3 -maxw 8
-```
-Verbose output for all dictionaries:
-```bash
-python hwtp.py utils process-all -v
 ```
 
 Generate a standalone partitions file:
 ```bash
-python hwtp.py utils part -o partitions.json --start-n 8 --end-n 40
+python hwtp.py utils part -o partitions.json -minw 3 -maxw 8 --start-n 8 --end-n 40
 ```
-You can also set word length bounds when generating partitions:
+
+Generate a single partition and print it to the console:
 ```bash
-python hwtp.py utils part -o partitions.json -minw 3 -maxw 8
+python hwtp.py utils jit -n 50 -minw 4 -maxw 9
 ```
-Generate a partition on the fly:
+
+Generate a single partition and save it to a file:
 ```bash
-python hwtp.py utils jit -n 20 -minw 4 -maxw 9
-```
-Save it to a file instead of printing:
-```bash
-python hwtp.py utils jit -n 20 -minw 4 -maxw 9 -save partition.txt
+python hwtp.py utils jit -n 50 -minw 4 -maxw 9 -save partition.txt
 ```
 
 ### Dictionary JSON Format
