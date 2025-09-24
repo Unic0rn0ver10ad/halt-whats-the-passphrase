@@ -9,6 +9,8 @@
 ## 🚀 Features
 
 - Generate memorable passphrases of exactly the length you choose
+<img src="hwtp_example1.png" alt="Example CLI Output">
+
 - Rich CLI feature set
 - Integration with free [Have I Been Pwned](https://haveibeenpwned.com/) API to check for compromise
 - Quickly view cached wordlists with `-lw` (lists are numbered)
