@@ -197,6 +197,10 @@ class passphrase:
 
     def generate_passphrase_wikipedia(self, num_titles=3, num_reps=1, colorize=False, augenbaumize=False, verbose=False, timeout=5):
         session = requests.Session()
+        session.headers.update({
+        "User-Agent": "Halt! What's the Passphrase? 1.0 Contact [unicornoverloaded@gmail.com]",
+        "Accept": "application/json",
+    })
         url = "https://en.wikipedia.org/w/api.php"
         params = {
             "action": "query",
