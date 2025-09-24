@@ -1,4 +1,4 @@
-# 🛑Halt! What's the Passphrase?🤔
+# Halt! What's the Passphrase?
 
 <img src="hwtp.png" alt="Halt! What's the Passphrase?" width="300">
 
@@ -6,20 +6,25 @@
 
 ---
 
-## 🚀 Features
+## 🤔 Features
 
-- Generate memorable passphrases of exactly the length you choose
+- Generate strong, memorable passphrases of exactly the length you choose!
 
   <img src="hwtp_example1.png" alt="Example CLI Output">
 
 - Rich CLI feature set
+- Passphrase support for multiple wordlists / languages
 - Integration with free [Have I Been Pwned](https://haveibeenpwned.com/) API to check for compromise
-- Quickly view cached wordlists with `-lw` (lists are numbered)
-- Choose which cached dictionary to use with `-d` (accepts a number or name)
+- Every month is Cybersecurity Awareness Month!
 
 ---
 
-## 🎮 Fun With Passphrases
+## ⚖️ (Un)Licensing
+Halt! What's the Passphrase? (HWTP) is free and unencumbered software released into the public domain through the [Unlicense](https://unlicense.org/). You are free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means. Do with it what you will, and may your passphrases not end up in HaveIBeenPwned 💪
+
+---
+
+## 🏓 Fun With Passphrases
 
 Generate a single passphrase:
 ```bash
@@ -88,7 +93,7 @@ python hwtp.py pwn pokemon1
 
 ---
 
-## 🔐 Fun With Passwords
+## 🤬 Fun With Passwords
 
 Colorized, 20 passwords using only numbers and no consecutive characters allowed:
 ```bash
@@ -105,12 +110,7 @@ Check a randomly generated password against known breaches:
 python hwtp.py pw -co -pwn
 ```
 
-🔴 Example of a configuration that **won't work**:
-```bash
-python hwtp.py pw -co -nc -ms 4 -md 4 -b -n 20 -c 8 -v
-```
-
-Generate a password using only special characters, and excluding some of those allowed:
+Generate a password using only special characters, and excluding some of those normally allowed:
 ```bash
 python hwtp.py pw -co -n 10 -no u l d -sd '@ # $ _ & ( ) / : ; ! ? - ='
 ```
@@ -210,12 +210,6 @@ Or simply use the Python file directly if dependencies are already met.
 
 ---
 
-## 🧠 License
-
-[Unlicense](https://unlicense.org/) – do with it what you will, and may your passphrases not end up in HaveIBeenPwned 💪
-
----
-
 ## 🙌 Contributions Welcome!
 
 Unless you're a 🤖
@@ -224,4 +218,6 @@ Unless you're a 🤖
 
 ## 📫 Contact
 
-https://github.com/Unic0rn0ver10ad
+[Github](https://github.com/Unic0rn0ver10ad)
+
+[Email](mailto:unicornoverloaded@gmail.com)
