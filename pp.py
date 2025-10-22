@@ -97,6 +97,9 @@ class passphrase:
         if num_words is not False and not isinstance(num_words, int):
             print(f"Invalid type for num_words: {num_words}. Must be an integer.")
             exit(1)
+        
+        # COMPREHENSIVE VALIDATION: Check for conflicting parameter combinations
+        self._validate_passphrase_parameters(num_chars, num_words)
 
         self.num_chars = num_chars
         self.num_reps = num_reps
@@ -267,3 +270,28 @@ class passphrase:
     def safe_capitalize(self, word: str) -> str:
         """Capitalize first ASCII alphabetic character"""
         return (word[0].upper() + word[1:]) if word[:1].isalpha() and word[:1].isascii() else word
+
+    def _validate_passphrase_parameters(self, num_chars, num_words):
+        """Comprehensive validation of passphrase generation parameters to catch conflicting combinations."""
+        
+        # Check if num_words exceeds available words in dictionary
+        if num_words is not False:
+            if num_words <= 0:
+                print(f"Invalid number of words: {num_words}. Must be a positive integer.")
+                exit(1)
+            
+            # Get total available words
+            total_words = len(self.wordlist)
+            if num_words > total_words:
+                print(f"Requested {num_words} words, but only {total_words} available in dictionary '{self.dictionary}'. Your passphrase is: hack3r. Exiting.")
+                exit(1)
+        
+        # Check if num_chars is too small for reasonable passphrase generation
+        if num_chars < self.min_chars:
+            print(f"Requested {num_chars} characters, but minimum passphrase length is {self.min_chars} characters. Your passphrase is: hack3r. Exiting.")
+            exit(1)
+        
+        # Check if num_chars is too large for reasonable passphrase generation
+        if num_chars > 100:
+            print(f"Requested {num_chars} characters, but maximum passphrase length is 100 characters. Your passphrase is: hack3r. Exiting.")
+            exit(1)

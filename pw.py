@@ -67,6 +67,9 @@ class password:
       print(f"You've tried to add a list of special characters that is {len(self.specials_override)} characters long. That's just too many characters (100 is the maximum). Your password is: hack3r. Exiting.")
       exit(1)
 
+    # COMPREHENSIVE VALIDATION: Check for conflicting parameter combinations
+    self._validate_password_parameters()
+
     # CREATE UPPER, LOWER, DIGITS ALPHABETS
     # create the uppercase, lowercase, and digits alphabets (strings of usable characters by class) that can be used to generate passwords from system defaults
     self.alphabet_uppercase = string.ascii_uppercase
@@ -280,3 +283,75 @@ class password:
     else:
       random.SystemRandom().shuffle(frame)
     return frame
+
+  def _validate_password_parameters(self):
+    """Comprehensive validation of password generation parameters to catch conflicting combinations."""
+    
+    # Check if specials_override contains only special characters when min_specials > 0
+    if self.min_specials > 0 and self.specials_override != str():
+      specials_override_clean = self.specials_override.replace(' ', '')
+      if not any(c in string.punctuation for c in specials_override_clean):
+        print(f"You've asked for {self.min_specials} special characters but your specials override '{self.specials_override}' contains no special characters (punctuation). Your password is: hack3r. Exiting.")
+        exit(1)
+    
+    # Check if specials_deny removes all special characters when min_specials > 0
+    if self.min_specials > 0 and self.specials_deny != str():
+      # Create a test specials list to see what would remain
+      test_specials = [x for x in string.punctuation]
+      for char in self.specials_deny:
+        try:
+          test_specials.remove(char)
+        except ValueError:
+          pass
+      if not test_specials:
+        print(f"You've asked for {self.min_specials} special characters but your specials deny list '{self.specials_deny}' removes all available special characters. Your password is: hack3r. Exiting.")
+        exit(1)
+    
+    # Check if specials_override + specials_deny results in no special characters when min_specials > 0
+    if self.min_specials > 0 and self.specials_override != str() and self.specials_deny != str():
+      specials_override_clean = ''.join(set(self.specials_override.replace(' ', '')))
+      remaining_specials = [c for c in specials_override_clean if c not in self.specials_deny]
+      if not remaining_specials:
+        print(f"You've asked for {self.min_specials} special characters but your specials override '{self.specials_override}' combined with specials deny '{self.specials_deny}' leaves no special characters available. Your password is: hack3r. Exiting.")
+        exit(1)
+    
+    # Check if specials_override results in no special characters when min_specials > 0
+    if self.min_specials > 0 and self.specials_override != str():
+      specials_override_clean = ''.join(set(self.specials_override.replace(' ', '')))
+      if not any(c in string.punctuation for c in specials_override_clean):
+        print(f"You've asked for {self.min_specials} special characters but your specials override '{self.specials_override}' contains no special characters (punctuation). Your password is: hack3r. Exiting.")
+        exit(1)
+    
+    # Check if disallowing character classes conflicts with minimum requirements
+    if not self.use_digits and self.min_digits > 0:
+      print(f"You've asked for {self.min_digits} digits but disallowed all digits with -no d. Your password is: hack3r. Exiting.")
+      exit(1)
+    
+    if not self.use_specials and self.min_specials > 0:
+      print(f"You've asked for {self.min_specials} special characters but disallowed all special characters with -no s. Your password is: hack3r. Exiting.")
+      exit(1)
+    
+    # Check if bookend is requested but no letters are allowed
+    if self.bookend and not self.use_uppercase and not self.use_lowercase:
+      print("You've asked for a bookended password but disallowed both uppercase and lowercase letters. Your password is: n1c3try. Exiting.")
+      exit(1)
+    
+    # Check if ambiguous character removal would eliminate all characters of a required type
+    if self.remove_ambiguous:
+      if self.use_uppercase:
+        remaining_upper = [c for c in string.ascii_uppercase if c not in self.ambiguous_characters]
+        if not remaining_upper:
+          print("You've asked for uppercase letters but the ambiguous character filter removes all uppercase letters. Your password is: hack3r. Exiting.")
+          exit(1)
+      
+      if self.use_lowercase:
+        remaining_lower = [c for c in string.ascii_lowercase if c not in self.ambiguous_characters]
+        if not remaining_lower:
+          print("You've asked for lowercase letters but the ambiguous character filter removes all lowercase letters. Your password is: hack3r. Exiting.")
+          exit(1)
+      
+      if self.use_digits:
+        remaining_digits = [c for c in string.digits if c not in self.ambiguous_characters]
+        if not remaining_digits:
+          print("You've asked for digits but the ambiguous character filter removes all digits. Your password is: hack3r. Exiting.")
+          exit(1)
